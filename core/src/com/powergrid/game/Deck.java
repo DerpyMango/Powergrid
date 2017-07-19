@@ -39,4 +39,7 @@ public class Deck extends Cards {
         }
     }
 
+    public Plant getTop() {
+        return cards.get(0);
+    }
 }

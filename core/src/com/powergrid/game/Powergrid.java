@@ -6,9 +6,15 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import java.util.Arrays;
+
 public class Powergrid extends ApplicationAdapter {
-	SpriteBatch batch;
-	Texture img;
+	private SpriteBatch batch;
+	private Texture img;
+
+	static int maxPlayers = 6;
+	private int numPlayers = 2;
+	private Player[] players = new Player[maxPlayers];
 	
 	@Override
 	public void create () {
@@ -16,8 +22,19 @@ public class Powergrid extends ApplicationAdapter {
 		img = new Texture("badlogic.jpg");
 
 		Deck deck = new Deck();
-		deck.initDeck(2);
-		deck.displayDeck();
+		deck.initDeck(numPlayers);
+
+		Market market = new Market();
+		market.initMarket(deck);
+		System.out.println("Deck");
+		deck.displayCards();
+		market.displayMarket();
+
+		for (int p=0;p<numPlayers;p++) {
+			players[p] = new Player().name("Player "+p).id(p).electros(50);
+			players[p].display();
+		}
+
 	}
 
 	@Override

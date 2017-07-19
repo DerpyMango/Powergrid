@@ -10,12 +10,25 @@ public class Market {
     private Cards future;
     private Cards market;
 
-    public static void initMarket(Deck deck) {
-        market.add(deck.getTop());
-        market.add(deck.getTop());
-        market.add(deck.getTop());
-        market.add(deck.getTop());
+    public void initMarket(Deck deck) {
+        market = new Cards();
+        future = new Cards();
 
-        future.
+        deck.moveTopTo(market);
+        deck.moveTopTo(market);
+        deck.moveTopTo(market);
+        deck.moveTopTo(market);
+
+        deck.moveTopTo(future);
+        deck.moveTopTo(future);
+        deck.moveTopTo(future);
+        deck.moveTopTo(future);
+    }
+
+    public void displayMarket() {
+        System.out.println("Market");
+        market.displayCards();
+        System.out.println("Future");
+        future.displayCards();
     }
 }
