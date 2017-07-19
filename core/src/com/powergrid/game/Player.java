@@ -1,7 +1,7 @@
 package com.powergrid.game;
 
-import java.text.Format;
-import java.util.List;
+
+import java.awt.*;
 
 /**
  * Created by David on 8/07/2017.
@@ -13,17 +13,25 @@ public class Player {
     private Cards plants = new Cards();
     private int numCity = 0;
     private int turnOrder = 0;
+    private Color colour;
 
     public Player name(String name) {
         this.name = name;
         return this;
     }
+
     public Player id(int id) {
         this.id = id;
         return this;
     }
+
     public Player electros(int electros) {
         this.electros = electros;
+        return this;
+    }
+
+    public Player colour(Color colour) {
+        this.colour = colour;
         return this;
     }
 
