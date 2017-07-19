@@ -27,26 +27,26 @@ public class Powergrid extends ApplicationAdapter {
 	
 	@Override
 	public void create () {
-		batch = new SpriteBatch();
-		skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
+        batch = new SpriteBatch();
+        skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
 
-		Deck deck = new Deck();
-		deck.initDeck(numPlayers);
+        Deck deck = new Deck();
+        deck.initDeck(numPlayers);
 
-		Market market = new Market();
-		market.initMarket(deck);
-		System.out.println("Deck");
-		deck.displayCards();
-		market.displayMarket();
+        Market market = new Market();
+        market.initMarket(deck);
+        System.out.println("Deck");
+        deck.displayCards();
+        market.displayMarket();
 
-		for (int p=0;p<numPlayers;p++) {
-			players[p] = new Player().name(playerNames[p]).id(p).electros(50).colour(colours[p]);
-			players[p].display();
-		}
+        for (int p = 0; p < numPlayers; p++) {
+            players[p] = new Player().name(playerNames[p]).id(p).electros(50).colour(colours[p]);
+            players[p].display();
+        }
 
-		TextField numPlayers = new TextField("", skin);
+        TextField numPlayers = new TextField("", skin);
         numPlayers.setMessageText("No. players");
         numPlayers.setAlignment(Align.left);
 
@@ -57,13 +57,13 @@ public class Powergrid extends ApplicationAdapter {
         Table table = new Table();
         table.setWidth(stage.getWidth());
         table.align(Align.center | Align.top);
-        table.setPosition(0,Gdx.graphics.getHeight());
+        table.setPosition(0, Gdx.graphics.getHeight());
 
-        TextButton button = new TextButton("Go",skin);
+        TextButton button = new TextButton("Go", skin);
         window = new Window("Start", skin);
         window.getTitleTable().add(new TextButton("X", skin)).height(window.getPadTop());
-        window.align(Align.center|Align.top);
-        window.setPosition(Gdx.graphics.getWidth()/2-window.getWidth()/2, Gdx.graphics.getHeight());
+        window.align(Align.center | Align.top);
+        window.setPosition(Gdx.graphics.getWidth() / 2 - window.getWidth() / 2, Gdx.graphics.getHeight());
         window.defaults().spaceBottom(10);
         window.row().fill().expandX();
         window.add(numPlayers);
@@ -84,22 +84,7 @@ public class Powergrid extends ApplicationAdapter {
 
         stage.addActor(table);
         stage.addActor(window);
-
-        numPlayers.setTextFieldListener((textField, key) -> {
-            if (key == '\t') {
-                //System.out.println(textField.getText());
-                textField.getOnscreenKeyboard().show(false);
-                //textField.setText("");
-            }
-        });
-        name.setTextFieldListener((textField, key) -> {
-            if (key == '\t') {
-                //System.out.println(textField.getText());
-                textField.getOnscreenKeyboard().show(false);
-                //textField.setText("");
-            }
-        });	}
-
+    }
 
 	@Override
 	public void render () {
