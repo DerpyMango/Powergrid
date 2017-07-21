@@ -107,4 +107,8 @@ public class Plant {
         font.draw(batch,i+".",x,y);
         displayPlant(batch,font,x+16,y);
     }
+
+    public int getCost() {
+        return cost;
+    }
 }

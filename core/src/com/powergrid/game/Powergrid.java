@@ -13,6 +13,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
+import java.util.List;
+
 public class Powergrid extends ApplicationAdapter {
 	private SpriteBatch batch;
     private Skin skin;
@@ -21,8 +23,8 @@ public class Powergrid extends ApplicationAdapter {
     private BitmapFont font;
 
 	private static final int maxPlayers = 6;
-	private int numPlayers = 2;
-	private Player players[] = new Player[maxPlayers];
+	private int numPlayers = 6;
+	private Players players = new Players();
 	private Color colours[] = {Color.RED,Color.YELLOW,Color.BLUE,Color.GREEN,Color.MAGENTA,Color.WHITE};
 	private String playerNames[] = {"Dave","Alex","Josh","Fred","Jake","Alice"};
 
@@ -60,10 +62,8 @@ public class Powergrid extends ApplicationAdapter {
         market = new Market();
         market.initMarket(deck);
 
-        for (int p = 0; p < numPlayers; p++) {
-            players[p] = new Player().name(playerNames[p]).id(p).electros(50).colour(colours[p]);
-            players[p].display();
-        }
+        players.initPlayers(numPlayers,playerNames,colours);
+
 
         TextField numPlayers = new TextField("", skin);
         numPlayers.setMessageText("No. players");
@@ -106,6 +106,16 @@ public class Powergrid extends ApplicationAdapter {
 
         stage.addActor(table);
         stage.addActor(window);
+
+        deck.moveTopTo(players.getPlayer(0).getPlants());
+        deck.moveTopTo(players.getPlayer(0).getPlants());
+        deck.moveTopTo(players.getPlayer(0).getPlants());
+        deck.moveTopTo(players.getPlayer(1).getPlants());
+        deck.moveTopTo(players.getPlayer(1).getPlants());
+        deck.moveTopTo(players.getPlayer(2).getPlants());
+        players.getPlayer(0).setNumCity(5);
+        players.getPlayer(1).setNumCity(5);
+        players.getPlayer(2).setNumCity(4);
     }
 
 	@Override
@@ -118,8 +128,10 @@ public class Powergrid extends ApplicationAdapter {
         stage.draw();
 
 		batch.begin();
+		    players.setTurnOrder();
             displayHeader();
             displayMarket(step);
+            displayPlayers();
 		batch.end();
 	}
 
@@ -130,9 +142,17 @@ public class Powergrid extends ApplicationAdapter {
     }
 
     private void displayMarket(int step) {
-	    market.displayMarket(step,batch,font,0,400);
+	    market.displayMarket(step,batch,font,0,420);
     }
-	
+
+    private void displayPlayers() {
+	    List<Player> sorted = players.getByNumCityAndHighestPlant();
+	    int y = 0;
+        for(Player player : sorted) {
+            player.display(batch,font,0,320-y);
+            y+=48;
+        }
+    }
 	@Override
 	public void dispose () {
 		batch.dispose();

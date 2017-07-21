@@ -2,11 +2,13 @@ package com.powergrid.game;
 
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 /**
  * Created by David on 8/07/2017.
  */
-public class Player {
+public class Player implements Comparable<Player>{
     private String name;
     private int id;
     private int electros = 50;
@@ -35,7 +37,42 @@ public class Player {
         return this;
     }
 
-    public void display() {
-        System.out.format("Name: %s Id: %d Electros: %d\n",name,id,electros);
+    public void display(SpriteBatch batch, BitmapFont font, int x, int y) {
+        String desc = String.format("%d. Name: %s, Electros: %d, Num Plants: %d, Num Cities: %d\n",turnOrder,name,electros,plants.getCards().size(),numCity);
+        font.setColor(colour);
+        font.draw(batch,desc,x,y);
+        plants.displayCardsNum(batch,font,x,y-8);
+    }
+
+    public Cards getPlants() {
+        return plants;
+    }
+
+    public int getNumCity() {
+        return numCity;
+    }
+
+    public int getHighestPlantNum() {
+        if(plants.getCards().size()==0)
+            return 0;
+        else
+            return plants.getCards().stream().map(Plant::getCost).max(Integer::compare).get().intValue();
+    }
+
+    public void setTurnOrder(int turnOrder) {
+        this.turnOrder = turnOrder;
+    }
+
+    @Override
+    public int compareTo(Player other) {
+        int byCity = other.getNumCity() - numCity;
+        if (byCity==0)
+            return other.getHighestPlantNum() - getHighestPlantNum();
+        else
+            return byCity;
+    }
+
+    public void setNumCity(int numCity) {
+        this.numCity = numCity;
     }
 }

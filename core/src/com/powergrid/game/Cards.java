@@ -52,4 +52,8 @@ public class Cards {
         cards.remove(top);
         other.add(top);
     }
+
+    public List<Plant> getCards() {
+        return cards;
+    }
 }

@@ -35,4 +35,8 @@ public class Market {
         font.draw(batch,"Market",x,y-40);
         market.displayCardsNum(batch,font,x,y-40-8);
     }
+
+    public Cards getMarket() {
+        return market;
+    }
 }
