@@ -1,5 +1,8 @@
 package com.powergrid.game;
 
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+
 import java.util.List;
 
 /**
@@ -93,7 +96,15 @@ public class Plant {
         return plantType[plant];
     }
 
-    public void printPlant() {
-        System.out.format("Cost: %d Resource: %s Amount: %d Cities: %d\n",cost,resource.getName(),numResource,numCity);
+    public void displayPlant(SpriteBatch batch, BitmapFont font, int x, int y) {
+        String plantDesc = String.format("Cost: %d Resource: %s Amount: %d Cities: %d\n",cost,resource.getName(),numResource,numCity);
+        font.setColor(resource.getColour());
+        font.draw(batch,plantDesc,x,y);
+    }
+
+    public void displayPlantNum(int i, SpriteBatch batch, BitmapFont font, int x, int y) {
+        font.setColor(resource.getColour());
+        font.draw(batch,i+".",x,y);
+        displayPlant(batch,font,x+16,y);
     }
 }

@@ -1,7 +1,7 @@
 package com.powergrid.game;
 
 
-import java.awt.*;
+import com.badlogic.gdx.graphics.Color;
 
 /**
  * Created by David on 8/07/2017.

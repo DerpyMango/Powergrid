@@ -1,5 +1,8 @@
 package com.powergrid.game;
 
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,9 +12,21 @@ import java.util.List;
 public class Cards {
     protected List<Plant> cards = new ArrayList<>();
 
-    public void displayCards() {
+    public void displayCards(SpriteBatch batch, BitmapFont font, int x, int y) {
+        int yy = y;
         for(Plant plant : cards) {
-            plant.printPlant();
+            plant.displayPlant(batch,font,x+8,yy);
+            yy-=8;
+        }
+    }
+
+    public void displayCardsNum(SpriteBatch batch, BitmapFont font, int x, int y) {
+        int yy = y;
+        int i = 1;
+        for(Plant plant : cards) {
+            plant.displayPlantNum(i,batch,font,x+8,yy);
+            yy-=8;
+            i++;
         }
     }
 
