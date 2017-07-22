@@ -1,5 +1,9 @@
 package com.powergrid.game;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+
 import java.util.List;
 
 /**
@@ -83,5 +87,60 @@ public class City {
     public City name(String name) {
         this.name = name;
         return this;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public Zone getZone() {
+        return zone;
+    }
+
+    public Player getTen() {
+        return ten;
+    }
+
+    public Player getFifteen() {
+        return fifteen;
+    }
+
+    public Player getTwenty() {
+        return twenty;
+    }
+
+    public void setTen(Player ten) {
+        this.ten = ten;
+    }
+
+    public void setFifteen(Player fifteen) {
+        this.fifteen = fifteen;
+    }
+
+    public void setTwenty(Player twenty) {
+        this.twenty = twenty;
+    }
+
+    public void display(SpriteBatch batch, BitmapFont font, int x, int y) {
+        String desc = String.format("%d. %s",id,name);
+        Color colour = zone.getColour();
+        font.setColor(colour);
+        font.draw(batch,desc,x,y);
+        if (ten!=null) {
+            font.setColor(ten.getColour());
+            font.draw(batch,ten.getName(),x+120,y);
+        }
+        if (fifteen!=null) {
+            font.setColor(fifteen.getColour());
+            font.draw(batch,fifteen.getName(),x+160,y);
+        }
+        if (twenty!=null) {
+            font.setColor(twenty.getColour());
+            font.draw(batch,twenty.getName(),x+200,y);
+        }
     }
 }

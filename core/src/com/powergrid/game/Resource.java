@@ -18,7 +18,7 @@ public class Resource {
     public static final Resource step3 = new Resource(0).name("step3").colour(Color.GRAY);
     public static final Resource coal = new Resource(1).name("coal").colour(Color.BROWN);
     public static final Resource oil = new Resource(2).name("oil").colour(Color.DARK_GRAY);
-    public static final Resource coaloil = new Resource(3).name("coaloil").colour(Color.ORANGE);
+    public static final Resource coaloil = new Resource(3).name("coal/oil").colour(Color.ORANGE);
     public static final Resource wind = new Resource(4).name("wind").colour(Color.GREEN);
     public static final Resource trash = new Resource(5).name("trash").colour(Color.YELLOW);
     public static final Resource nuclear = new Resource(6).name("nuclear").colour(Color.RED);

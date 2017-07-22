@@ -15,14 +15,14 @@ public class Players {
         }
     }
 
-    public List<Player> getByNumCityAndHighestPlant() {
+    public List<Player> getTurnOrder() {
         List<Player> sorted = new ArrayList<>(players);
         Collections.sort(sorted);
         return sorted;
     }
 
     public void setTurnOrder() {
-        List<Player> sorted = getByNumCityAndHighestPlant();
+        List<Player> sorted = getTurnOrder();
         int o=1;
         for(Player player : sorted) {
             player.setTurnOrder(o++);

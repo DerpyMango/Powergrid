@@ -2,6 +2,7 @@ package com.powergrid.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -46,7 +47,11 @@ public class Powergrid extends ApplicationAdapter {
 
 	private Market market;
     private Deck deck;
-	
+    private List<Player> turnOrder;
+    private List<Player> reverseTurnOrder;
+    private Player currentPlayer;
+    private int currentPlayerNum = 0;
+
 	@Override
 	public void create () {
         batch = new SpriteBatch();
@@ -56,14 +61,20 @@ public class Powergrid extends ApplicationAdapter {
         font.setColor(Color.BLACK);
         Gdx.input.setInputProcessor(stage);
 
-        Deck deck = new Deck();
+        deck = new Deck();
         deck.initDeck(numPlayers);
 
         market = new Market();
         market.initMarket(deck);
-
         players.initPlayers(numPlayers,playerNames,colours);
 
+        //6 active zones for 6 players
+        Zone.brown.setActive(true);
+        Zone.yellow.setActive(true);
+        Zone.cyan.setActive(true);
+        Zone.red.setActive(true);
+        Zone.blue.setActive(true);
+        Zone.magenta.setActive(true);
 
         TextField numPlayers = new TextField("", skin);
         numPlayers.setMessageText("No. players");
@@ -106,36 +117,134 @@ public class Powergrid extends ApplicationAdapter {
 
         stage.addActor(table);
         stage.addActor(window);
-
-        deck.moveTopTo(players.getPlayer(0).getPlants());
-        deck.moveTopTo(players.getPlayer(0).getPlants());
-        deck.moveTopTo(players.getPlayer(0).getPlants());
-        deck.moveTopTo(players.getPlayer(1).getPlants());
-        deck.moveTopTo(players.getPlayer(1).getPlants());
-        deck.moveTopTo(players.getPlayer(2).getPlants());
-        players.getPlayer(0).setNumCity(5);
-        players.getPlayer(1).setNumCity(5);
-        players.getPlayer(2).setNumCity(4);
     }
 
 	@Override
 	public void render () {
-	    float delta = Gdx.graphics.getDeltaTime();
-		Gdx.gl.glClearColor(0, 0, 0, 1);
-		Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
+        float delta = Gdx.graphics.getDeltaTime();
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
 
         stage.act(delta);
         stage.draw();
 
-		batch.begin();
-		    players.setTurnOrder();
+        batch.begin();
             displayHeader();
             displayMarket(step);
             displayPlayers();
-		batch.end();
+            displayCities();
+            doEachPhase();
+        batch.end();
+
+        doInput();
+    }
+
+    private void doInput() {
+	    if(phase==2) {
+	        getPlantToChoose();
+        }
+    }
+
+    private void getPlantToChoose() {
+        if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_1))
+            bidOnPlant(1);
+        else if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_2))
+            bidOnPlant(2);
+        else if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_3))
+            bidOnPlant(3);
+        else if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_4))
+            bidOnPlant(4);
+        else if(step==3 && Gdx.input.isKeyJustPressed(Input.Keys.NUM_5))
+            bidOnPlant(5);
+        else if(step==3 && Gdx.input.isKeyJustPressed(Input.Keys.NUM_6))
+            bidOnPlant(6);
+        else if(step > 0 && Gdx.input.isKeyJustPressed(Input.Keys.P))
+            passBid();
+    }
+
+    private void bidOnPlant(int plantNum) {
+	    int p = plantNum-1;
+	    Cards.move(market.getMarket().getCards().get(p),market.getMarket(),currentPlayer.getPlants());
+	    updateMarket();
+	    passBid();
+    }
+
+    private void updateMarket() {
+	    market.updateMarket(deck,step,phase);
+    }
+
+    private void passBid() {
+	    setNextPlayer();
+    }
+
+    private void setNextPlayer() {
+        if(currentPlayerNum<numPlayers-1) {
+            currentPlayerNum++;
+            currentPlayer = turnOrder.get(currentPlayerNum);
+
+        } else {
+            phase+=1;
+        }
+    }
+
+    private void doEachPhase() {
+		switch (phase) {
+            case 1:
+                phase1();
+                break;
+            case 2:
+                phase2();
+                break;
+            case 3:
+                phase3();
+                break;
+            case 4:
+                phase4();
+                break;
+            case 5:
+                phase5();
+                break;
+        }
 	}
 
-	private void displayHeader() {
+    private void phase1() {
+        players.setTurnOrder();
+        turnOrder = players.getTurnOrder();
+        reverseTurnOrder = players.getTurnOrder();
+        currentPlayer = turnOrder.get(0);
+        currentPlayerNum = 0;
+        phase=2;
+    }
+
+    private void phase2() {
+	    bidForPlant();
+    }
+
+    private void phase3() {
+
+    }
+
+    private void phase4() {
+
+    }
+
+    private void phase5() {
+
+    }
+
+    private void bidForPlant() {
+        StringBuilder message = new StringBuilder(currentPlayer.getName()+" choose plant to bid on");
+        if(step>0)
+            message.append(" or press P to pass");
+        displayMessage(message,currentPlayer.getColour());
+    }
+
+    private void displayMessage(StringBuilder message, Color colour) {
+	    font.setColor(colour);
+	    font.draw(batch,message,600,100);
+    }
+
+    private void displayHeader() {
 	    font.setColor(Color.RED);
 	    font.draw(batch,"Step: "+step+" Phase: "+phase, 200, 472);
 	    Resource.displayResources(batch,font,coal,oil,trash,nuclear,0,460);
@@ -146,13 +255,24 @@ public class Powergrid extends ApplicationAdapter {
     }
 
     private void displayPlayers() {
-	    List<Player> sorted = players.getByNumCityAndHighestPlant();
+	    List<Player> turnOrder = players.getTurnOrder();
 	    int y = 0;
-        for(Player player : sorted) {
+        for(Player player : turnOrder) {
             player.display(batch,font,0,320-y);
             y+=48;
         }
     }
+
+    private void displayCities() {
+	    int y=0;
+        for(City city : City.germany) {
+            if (city.getZone().isActive()) {
+                city.display(batch,font,600,460-y);
+                y+=8;
+            }
+        }
+    }
+
 	@Override
 	public void dispose () {
 		batch.dispose();

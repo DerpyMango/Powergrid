@@ -39,4 +39,14 @@ public class Market {
     public Cards getMarket() {
         return market;
     }
+
+    public void updateMarket(Deck deck, int step, int phase) {
+        if(deck.getTop()==Plant.step3) {
+            step = 3;
+            deck.remove(Plant.step3);
+        }
+        deck.moveTopTo(future);
+        Plant lowest = future.getLowest();
+        Cards.move(lowest,future,market);
+    }
 }

@@ -56,4 +56,16 @@ public class Cards {
     public List<Plant> getCards() {
         return cards;
     }
+
+    public Plant getLowest() {
+        int cost = 99;
+        Plant lowest = null;
+        for(Plant plant : cards) {
+            if(plant.getCost()<cost) {
+                lowest = plant;
+                cost = plant.getCost();
+            }
+        }
+        return lowest;
+    }
 }

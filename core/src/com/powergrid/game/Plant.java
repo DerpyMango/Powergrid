@@ -14,7 +14,10 @@ public class Plant {
     private int numCity;
     private int numResource;
     private Resource resource;
-    private List<Resource> held;
+    private int coal = 0;
+    private int oil = 0;
+    private int trash = 0;
+    private int nuclear = 0;
 
     public static final int numPlants = 43;
     public static Plant plantType[] = new Plant[numPlants];
@@ -97,7 +100,11 @@ public class Plant {
     }
 
     public void displayPlant(SpriteBatch batch, BitmapFont font, int x, int y) {
-        String plantDesc = String.format("Cost: %d Resource: %s Amount: %d Cities: %d\n",cost,resource.getName(),numResource,numCity);
+        StringBuilder plantDesc = new StringBuilder(String.format("[%d] Resource: %s Amount: %d Cities: %d",cost,resource.getName(),numResource,numCity));
+        if (coal>0)  plantDesc.append(" coal: "+coal);
+        if (oil>0)  plantDesc.append(" oil: "+oil);
+        if (trash>0)  plantDesc.append(" trash: "+trash);
+        if (nuclear>0)  plantDesc.append(" nuke: "+nuclear);
         font.setColor(resource.getColour());
         font.draw(batch,plantDesc,x,y);
     }
@@ -110,5 +117,37 @@ public class Plant {
 
     public int getCost() {
         return cost;
+    }
+
+    public int getCoal() {
+        return coal;
+    }
+
+    public void setCoal(int coal) {
+        this.coal = coal;
+    }
+
+    public int getOil() {
+        return oil;
+    }
+
+    public void setOil(int oil) {
+        this.oil = oil;
+    }
+
+    public int getTrash() {
+        return trash;
+    }
+
+    public void setTrash(int trash) {
+        this.trash = trash;
+    }
+
+    public int getNuclear() {
+        return nuclear;
+    }
+
+    public void setNuclear(int nuclear) {
+        this.nuclear = nuclear;
     }
 }

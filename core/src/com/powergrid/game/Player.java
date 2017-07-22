@@ -38,7 +38,7 @@ public class Player implements Comparable<Player>{
     }
 
     public void display(SpriteBatch batch, BitmapFont font, int x, int y) {
-        String desc = String.format("%d. Name: %s, Electros: %d, Num Plants: %d, Num Cities: %d\n",turnOrder,name,electros,plants.getCards().size(),numCity);
+        String desc = String.format("%d. %s, Electros: %d, Num Plants: %d, Num Cities: %d\n",turnOrder,name,electros,plants.getCards().size(),numCity);
         font.setColor(colour);
         font.draw(batch,desc,x,y);
         plants.displayCardsNum(batch,font,x,y-8);
@@ -56,7 +56,7 @@ public class Player implements Comparable<Player>{
         if(plants.getCards().size()==0)
             return 0;
         else
-            return plants.getCards().stream().map(Plant::getCost).max(Integer::compare).get().intValue();
+            return plants.getCards().stream().map(Plant::getCost).max(Integer::compare).get();
     }
 
     public void setTurnOrder(int turnOrder) {
@@ -74,5 +74,25 @@ public class Player implements Comparable<Player>{
 
     public void setNumCity(int numCity) {
         this.numCity = numCity;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public int getElectros() {
+        return electros;
+    }
+
+    public int getTurnOrder() {
+        return turnOrder;
+    }
+
+    public Color getColour() {
+        return colour;
     }
 }
