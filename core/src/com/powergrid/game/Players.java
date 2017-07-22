@@ -21,6 +21,14 @@ public class Players {
         return sorted;
     }
 
+
+    public List<Player> getReverseTurnOrder() {
+        List<Player> sorted = new ArrayList<>(players);
+        Collections.sort(sorted);
+        Collections.reverse(sorted);
+        return sorted;
+    }
+
     public void setTurnOrder() {
         List<Player> sorted = getTurnOrder();
         int o=1;

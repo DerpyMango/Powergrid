@@ -100,7 +100,7 @@ public class Plant {
     }
 
     public void displayPlant(SpriteBatch batch, BitmapFont font, int x, int y) {
-        StringBuilder plantDesc = new StringBuilder(String.format("[%d] Resource: %s Amount: %d Cities: %d",cost,resource.getName(),numResource,numCity));
+        StringBuilder plantDesc = new StringBuilder(String.format("[%d] %s Fuel: %d Cities: %d",cost,resource.getName(),numResource,numCity));
         if (coal>0)  plantDesc.append(" coal: "+coal);
         if (oil>0)  plantDesc.append(" oil: "+oil);
         if (trash>0)  plantDesc.append(" trash: "+trash);
@@ -113,6 +113,12 @@ public class Plant {
         font.setColor(resource.getColour());
         font.draw(batch,i+".",x,y);
         displayPlant(batch,font,x+16,y);
+    }
+
+    public void displayPlantBid(SpriteBatch batch, BitmapFont font, int x, int y, int bid) {
+        StringBuilder plantDesc = new StringBuilder(String.format("[%d] %s Fuel: %d Cities: %d Bid: %d", cost, resource.getName(), numResource, numCity, bid));
+        font.setColor(resource.getColour());
+        font.draw(batch,plantDesc,x,y);
     }
 
     public int getCost() {

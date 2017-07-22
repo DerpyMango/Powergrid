@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import java.util.List;
@@ -28,6 +29,7 @@ public class Powergrid extends ApplicationAdapter {
 	private Players players = new Players();
 	private Color colours[] = {Color.RED,Color.YELLOW,Color.BLUE,Color.GREEN,Color.MAGENTA,Color.WHITE};
 	private String playerNames[] = {"Dave","Alex","Josh","Fred","Jake","Alice"};
+	private String phases[] = {"Init","Play Order","Auction","Resources","Cities","Bureaucracy"};
 
     public static final int areas[] = {0,0,3,3,4,5,5};
     public static final int maxPlants[] = {0,0,4,3,3,3,3};
@@ -51,6 +53,12 @@ public class Powergrid extends ApplicationAdapter {
     private List<Player> reverseTurnOrder;
     private Player currentPlayer;
     private int currentPlayerNum = 0;
+
+    private Plant bidingPlant = null;
+    private int currentBid = 0;
+    private int minBid = 0;
+    private String errorMessage = "";
+    private long errorTime = 0;
 
 	@Override
 	public void create () {
@@ -133,10 +141,10 @@ public class Powergrid extends ApplicationAdapter {
             displayMarket(step);
             displayPlayers();
             displayCities();
+            displayErrorMessage();
             doEachPhase();
+            doInput();
         batch.end();
-
-        doInput();
     }
 
     private void doInput() {
@@ -160,11 +168,36 @@ public class Powergrid extends ApplicationAdapter {
             bidOnPlant(6);
         else if(step > 0 && Gdx.input.isKeyJustPressed(Input.Keys.P))
             passBid();
+        if(bidingPlant!=null) {
+            displayCurrentBid();
+            if(Gdx.input.isKeyJustPressed(Input.Keys.UP))
+                currentBid+=1;
+            else if(Gdx.input.isKeyJustPressed(Input.Keys.DOWN) && currentBid>minBid)
+                currentBid-=1;
+            else if(Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+                movePlantToPlayer(bidingPlant);
+            }
+        }
     }
 
     private void bidOnPlant(int plantNum) {
-	    int p = plantNum-1;
-	    Cards.move(market.getMarket().getCards().get(p),market.getMarket(),currentPlayer.getPlants());
+	    Plant plant = market.getMarket().getCards().get(plantNum-1);
+	    currentBid = plant.getCost();
+	    minBid = currentBid;
+	    bidingPlant = plant;
+    }
+
+    private void displayCurrentBid() {
+        bidingPlant.displayPlantBid(batch,font,600,92,currentBid);
+    }
+
+    private void movePlantToPlayer(Plant plant) {
+	    if(currentBid > currentPlayer.getElectros()) {
+	        setErrorMessage("Not enough money");
+	        return;
+        }
+	    Cards.move(plant,market.getMarket(),currentPlayer.getPlants());
+	    currentPlayer.spend(currentBid);
 	    updateMarket();
 	    passBid();
     }
@@ -174,6 +207,7 @@ public class Powergrid extends ApplicationAdapter {
     }
 
     private void passBid() {
+	    bidingPlant = null;
 	    setNextPlayer();
     }
 
@@ -210,7 +244,7 @@ public class Powergrid extends ApplicationAdapter {
     private void phase1() {
         players.setTurnOrder();
         turnOrder = players.getTurnOrder();
-        reverseTurnOrder = players.getTurnOrder();
+        reverseTurnOrder = players.getReverseTurnOrder();
         currentPlayer = turnOrder.get(0);
         currentPlayerNum = 0;
         phase=2;
@@ -244,9 +278,24 @@ public class Powergrid extends ApplicationAdapter {
 	    font.draw(batch,message,600,100);
     }
 
+    private void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+        errorTime = TimeUtils.millis()+1000;
+    }
+
+    private void displayErrorMessage() {
+	    if(errorTime==0) return;
+        font.setColor(Color.PURPLE);
+        font.draw(batch,errorMessage,600,84);
+        if (TimeUtils.millis()>errorTime) {
+            errorTime = 0;
+            errorMessage = "";
+        }
+    }
+
     private void displayHeader() {
 	    font.setColor(Color.RED);
-	    font.draw(batch,"Step: "+step+" Phase: "+phase, 200, 472);
+	    font.draw(batch,"Step: "+step+" Phase: "+phase+" "+phases[phase], 200, 472);
 	    Resource.displayResources(batch,font,coal,oil,trash,nuclear,0,460);
     }
 

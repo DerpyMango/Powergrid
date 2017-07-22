@@ -95,4 +95,8 @@ public class Player implements Comparable<Player>{
     public Color getColour() {
         return colour;
     }
+
+    public void spend(int amount) {
+        electros -= amount;
+    }
 }
