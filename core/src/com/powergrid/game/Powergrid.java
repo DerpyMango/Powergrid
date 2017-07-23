@@ -77,6 +77,8 @@ public class Powergrid extends ApplicationAdapter {
         market = new Market();
         market.initMarket(deck);
         players.initPlayers(numPlayers,playerNames,colours);
+        turnOrder = players.getTurnOrder();
+        reverseTurnOrder = players.getReverseTurnOrder();
 
         //6 active zones for 6 players
         Zone.brown.setActive(true);
@@ -344,21 +346,22 @@ public class Powergrid extends ApplicationAdapter {
             }
             p++;
         }
-        if(step==0) step=1;
+        if(step==0) {
+            step=1;
+            determineTurnOrder();
+        }
         phase+=1;
         for (Player player : turnOrder)
             player.setPassed(false);
-        currentPlayer = reverseTurnOrder.get(0);
-        currentPlayerNum = 0;
+        initReverseTurnOrderPlayer();
     }
 
     private void setNextReversePlayer() {
 	    currentPlayerNum+=1;
 	    if(currentPlayerNum>=numPlayers) {
 	        phase+=1;
-	        currentPlayer = reverseTurnOrder.get(0);
-	        currentPlayerNum = 0;
-	        return;
+            initReverseTurnOrderPlayer();
+            return;
         }
         currentPlayer = reverseTurnOrder.get(currentPlayerNum);
     }
@@ -383,12 +386,26 @@ public class Powergrid extends ApplicationAdapter {
         }
 	}
 
-    private void phase1() {
+	private void determineTurnOrder() {
         players.setTurnOrder();
         turnOrder = players.getTurnOrder();
         reverseTurnOrder = players.getReverseTurnOrder();
+    }
+
+    private void initTurnOrderPlayer() {
         currentPlayer = turnOrder.get(0);
         currentPlayerNum = 0;
+    }
+
+
+    private void initReverseTurnOrderPlayer() {
+        currentPlayer = reverseTurnOrder.get(0);
+        currentPlayerNum = 0;
+    }
+
+    private void phase1() {
+        determineTurnOrder();
+        initTurnOrderPlayer();
         phase=2;
     }
 
@@ -448,7 +465,7 @@ public class Powergrid extends ApplicationAdapter {
     }
 
     private void displayPlayers() {
-	    List<Player> turnOrder = players.getTurnOrder();
+	    //List<Player> turnOrder = players.getTurnOrder();
 	    int y = 0;
         for(Player player : turnOrder) {
             player.display(batch,font,0,320-y);
