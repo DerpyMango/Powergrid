@@ -17,6 +17,7 @@ public class City {
     private Player ten;
     private Player fifteen;
     private Player twenty;
+    private boolean visited = false;
 
     public static final int numCities = 42;
     public static City germany[] = new City[numCities];
@@ -125,6 +126,14 @@ public class City {
         this.twenty = twenty;
     }
 
+    public Color getColor() {
+        return zone.getColour();
+    }
+
+    public boolean isActive() {
+        return zone.isActive();
+    }
+
     public void display(SpriteBatch batch, BitmapFont font, int x, int y) {
         String desc = String.format("%02d. %s",id,name);
         Color colour = zone.getColour();
@@ -141,6 +150,39 @@ public class City {
         if (twenty!=null) {
             font.setColor(twenty.getColour());
             font.draw(batch,twenty.getName(),x+200,y);
+        }
+    }
+
+    public int findCheapestRoute(Player player) {
+        List<Connection> connections = Connection.getConnections(this);
+        int minCost = 999;
+        for(Connection connection : connections) {
+            City city = connection.otherCity(this);
+            System.out.println("City: "+city.getName()+" Cost: "+minCost);
+            if(!city.visited) {
+                city.visited = true;
+                int cost = connection.getCost();
+                if (!city.hasPlayer(player))
+                    cost += city.findCheapestRoute(player);
+                if (cost < minCost) {
+                    minCost = cost;
+                }
+            }
+        }
+        return minCost;
+    }
+
+    public boolean hasPlayer(Player player) {
+        return (ten==player || fifteen==player || twenty==player);
+    }
+
+    public static City getCity(int cityNum) {
+        return germany[cityNum];
+    }
+
+    public static void resetVisits() {
+        for(City city : germany) {
+            city.visited = false;
         }
     }
 }

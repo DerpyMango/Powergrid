@@ -59,6 +59,8 @@ public class Powergrid extends ApplicationAdapter {
     private int minBid = 0;
     private String errorMessage = "";
     private long errorTime = 0;
+    private String cityNumString = "";
+    private int cityCost = 0;
 
 	@Override
 	public void create () {
@@ -152,7 +154,62 @@ public class Powergrid extends ApplicationAdapter {
 	        getPlantToChoose();
         } else if(phase==3) {
 	        buyResources();
+        } else if(phase==4) {
+	        buyCity();
         }
+    }
+
+    private void buyCity() {
+	    get2digitNumber();
+	    displayCityFromNum();
+        if (Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE) && cityNumString.length()>0)
+            cityNumString = cityNumString.substring(0,cityNumString.length()-1);
+	    if(cityNumString.length()==2) {
+            int c = Integer.parseInt(cityNumString);
+            City city = City.getCity(c);
+            if(currentPlayer.getNumCity()>0) {
+                cityCost = city.findCheapestRoute(currentPlayer);
+                City.resetVisits();
+            } else {
+                cityCost = 10;
+            }
+        }
+        if (cityNumString.length()==2 && Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+            int c = Integer.parseInt(cityNumString);
+            City city = City.getCity(c);
+            city.setTen(currentPlayer);
+            currentPlayer.incNumCity();
+            cityNumString = "";
+        }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.P)) {
+	        setNextReversePlayer();
+        }
+    }
+
+    private void get2digitNumber() {
+	    int digit = getDigit();
+	    if(digit>-1 && cityNumString.length()<2) {
+            if (cityNumString.length() == 1) {
+                String num = cityNumString + digit;
+                int n = Integer.parseInt(num);
+                if (n >= City.numCities)
+                    return;
+            }
+            cityNumString += digit;
+        } else if(digit>-1 && cityNumString.length()==2) {
+            cityNumString = "" + digit;
+        }
+	}
+
+    private void displayCityFromNum() {
+	    StringBuilder cityDesc = new StringBuilder(String.format("%s.",cityNumString));
+        font.setColor(Color.WHITE);
+	    if(cityNumString.length()==2) {
+	        int city = Integer.parseInt(cityNumString);
+	        cityDesc.append(String.format(" %s Cost: %d",City.getCity(city).getName(),cityCost));
+            font.setColor(City.getCity(city).getColor());
+        }
+        font.draw(batch,cityDesc,600,92);
     }
 
     private void buyResources() {
@@ -342,7 +399,8 @@ public class Powergrid extends ApplicationAdapter {
 	}
 
     private void phase4() {
-
+        StringBuilder message = new StringBuilder(currentPlayer.getName()+" choose city to connect to (Enter to finish turn)");
+        displayMessage(message,currentPlayer.getColour());
     }
 
     private void phase5() {
@@ -403,6 +461,20 @@ public class Powergrid extends ApplicationAdapter {
                 y+=8;
             }
         }
+    }
+
+    private int getDigit() {
+        if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)) return 1;
+        if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)) return 2;
+        if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)) return 3;
+        if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_4)) return 4;
+        if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_5)) return 5;
+        if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_6)) return 6;
+        if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_7)) return 7;
+        if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_8)) return 8;
+        if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_9)) return 9;
+        if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_0)) return 0;
+        return -1;
     }
 
 	@Override

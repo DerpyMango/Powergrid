@@ -1,5 +1,8 @@
 package com.powergrid.game;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by David on 8/07/2017.
  */
@@ -126,5 +129,48 @@ public class Connection {
     public Connection cost(int cost) {
         this.cost = cost;
         return this;
+    }
+
+    public City getFrom() {
+        return from;
+    }
+
+    public City getTo() {
+        return to;
+    }
+
+    public int getCost() {
+        return cost;
+    }
+
+    public static List<City> getConnectedCities(City city) {
+        List<City> connectedCities = new ArrayList<>();
+        for(int i=0; i<numConnections; i++) {
+            if(connections[i].from==city)
+                connectedCities.add(connections[i].to);
+            else if(connections[i].to==city)
+                connectedCities.add(connections[i].from);
+        }
+        return connectedCities;
+    }
+
+    public static List<Connection> getConnections(City city) {
+        List<Connection> connectionsTo = new ArrayList<>();
+        for(int i=0; i<numConnections; i++) {
+            if(connections[i].from==city || connections[i].to==city)
+                connectionsTo.add(connections[i]);
+        }
+        return connectionsTo;
+    }
+
+    public City otherCity(City city) {
+        if(from==city)
+            return to;
+        else
+            return from;
+    }
+
+    public boolean hasCity(City city) {
+        return (to==city || from==city);
     }
 }

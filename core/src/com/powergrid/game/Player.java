@@ -110,4 +110,8 @@ public class Player implements Comparable<Player>{
     public void setPassed(boolean passed) {
         this.passed = passed;
     }
+
+    public void incNumCity() {
+        numCity+=1;
+    }
 }
