@@ -168,8 +168,8 @@ public class Powergrid extends ApplicationAdapter {
             int c = Integer.parseInt(cityNumString);
             City city = City.getCity(c);
             if(currentPlayer.getNumCity()>0) {
-                cityCost = city.findCheapestRoute(currentPlayer);
-                City.resetVisits();
+                cityCost = city.getPrice(step,currentPlayer);
+                cityCost += city.findCheapestRoute(currentPlayer);
             } else {
                 cityCost = 10;
             }
@@ -177,6 +177,7 @@ public class Powergrid extends ApplicationAdapter {
         if (cityNumString.length()==2 && Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
             int c = Integer.parseInt(cityNumString);
             City city = City.getCity(c);
+            currentPlayer.spend(cityCost);
             city.setTen(currentPlayer);
             currentPlayer.incNumCity();
             cityNumString = "";
@@ -355,6 +356,8 @@ public class Powergrid extends ApplicationAdapter {
 	    currentPlayerNum+=1;
 	    if(currentPlayerNum>=numPlayers) {
 	        phase+=1;
+	        currentPlayer = reverseTurnOrder.get(0);
+	        currentPlayerNum = 0;
 	        return;
         }
         currentPlayer = reverseTurnOrder.get(currentPlayerNum);
@@ -399,7 +402,7 @@ public class Powergrid extends ApplicationAdapter {
 	}
 
     private void phase4() {
-        StringBuilder message = new StringBuilder(currentPlayer.getName()+" choose city to connect to (Enter to finish turn)");
+        StringBuilder message = new StringBuilder(currentPlayer.getName()+" choose city to connect to (P to finish turn)");
         displayMessage(message,currentPlayer.getColour());
     }
 

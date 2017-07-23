@@ -54,7 +54,7 @@ public class Connection {
     public static Connection duisEsse = new Connection(33).from(City.duisburg).to(City.essen).cost(0);
     public static Connection munsDort = new Connection(34).from(City.munster).to(City.dortmund).cost(2);
     public static Connection esseDuss = new Connection(35).from(City.essen).to(City.dusseldorf).cost(2);
-    public static Connection esseDort = new Connection(36).from(City.essen).to(City.dortmund).cost(2);
+    public static Connection esseDort = new Connection(36).from(City.essen).to(City.dortmund).cost(4);
     public static Connection dortKass = new Connection(37).from(City.dortmund).to(City.kassel).cost(18);
     public static Connection hannErfu = new Connection(38).from(City.hannover).to(City.erfurt).cost(19);
     public static Connection kassErfu = new Connection(39).from(City.kassel).to(City.erfurt).cost(15);

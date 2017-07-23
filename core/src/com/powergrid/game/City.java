@@ -17,7 +17,7 @@ public class City {
     private Player ten;
     private Player fifteen;
     private Player twenty;
-    private boolean visited = false;
+    private int totalCost = 9999;
 
     public static final int numCities = 42;
     public static City germany[] = new City[numCities];
@@ -134,6 +134,14 @@ public class City {
         return zone.isActive();
     }
 
+    public void setTotalCost(int cost) {
+        totalCost = cost;
+    }
+
+    public int getTotalCost() {
+        return totalCost;
+    }
+
     public void display(SpriteBatch batch, BitmapFont font, int x, int y) {
         String desc = String.format("%02d. %s",id,name);
         Color colour = zone.getColour();
@@ -154,22 +162,31 @@ public class City {
     }
 
     public int findCheapestRoute(Player player) {
-        List<Connection> connections = Connection.getConnections(this);
-        int minCost = 999;
-        for(Connection connection : connections) {
-            City city = connection.otherCity(this);
-            System.out.println("City: "+city.getName()+" Cost: "+minCost);
-            if(!city.visited) {
-                city.visited = true;
-                int cost = connection.getCost();
-                if (!city.hasPlayer(player))
-                    cost += city.findCheapestRoute(player);
-                if (cost < minCost) {
-                    minCost = cost;
-                }
+        City.resetVisits();
+        markConnectionCosts(0);
+        int cheapest = 9999;
+        for(City city : germany) {
+            int cost = city.getTotalCost();
+            if(city.hasPlayer(player) && cost < cheapest) {
+                cheapest = cost;
             }
         }
-        return minCost;
+        return cheapest;
+    }
+
+    private void markConnectionCosts(int prevCost) {
+        List<Connection> connections = Connection.getConnections(this);
+        for(Connection connection : connections) {
+            City city = connection.otherCity(this);
+            int cost = connection.getCost() + prevCost;
+            //System.out.println("City: "+city.getName()+" Cost: "+(cost));
+            if(cost < city.getTotalCost()) {
+                city.setTotalCost(cost);
+                //System.out.println("--go in--");
+                city.markConnectionCosts(cost);
+            }
+            //System.out.println("--return--");
+        }
     }
 
     public boolean hasPlayer(Player player) {
@@ -182,7 +199,14 @@ public class City {
 
     public static void resetVisits() {
         for(City city : germany) {
-            city.visited = false;
+            city.totalCost = 9999;
         }
+    }
+
+    public int getPrice(int step, Player player) {
+        if(ten==null) return 10;
+        if(fifteen==null) return 15;
+        if(twenty==null) return 20;
+        return 0;
     }
 }
