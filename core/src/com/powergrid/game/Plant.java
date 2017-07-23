@@ -156,4 +156,46 @@ public class Plant {
     public void setNuclear(int nuclear) {
         this.nuclear = nuclear;
     }
+
+    public void incCoal() {
+        coal+=1;
+    }
+
+    public void incOil() {
+        oil+=1;
+    }
+
+    public void incTrash() {
+        trash+=1;
+    }
+
+    public void incNuclear() {
+        nuclear+=1;
+    }
+
+    public boolean notMaxCoal() {
+        if(resource!=Resource.coal && resource!=Resource.coaloil) return false;
+        if(resource==Resource.coal && coal<numResource*2) return true;
+        if(resource==Resource.coaloil && coal+oil<numResource) return true;
+        return false;
+    }
+
+    public boolean notMaxOil() {
+        if (resource != Resource.oil && resource != Resource.coaloil) return false;
+        if (resource == Resource.oil && oil < numResource*2) return true;
+        if (resource == Resource.coaloil && coal + oil < numResource*2) return true;
+        return false;
+    }
+
+    public boolean notMaxTrash() {
+        if(resource!=Resource.trash) return false;
+        if(trash<numResource*2) return true;
+        return false;
+    }
+
+    public boolean notMaxNuclear() {
+        if(resource!=Resource.nuclear) return false;
+        if(nuclear<numResource*2) return true;
+        return false;
+    }
 }

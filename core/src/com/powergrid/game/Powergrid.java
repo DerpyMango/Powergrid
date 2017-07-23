@@ -25,7 +25,7 @@ public class Powergrid extends ApplicationAdapter {
     private BitmapFont font;
 
 	private static final int maxPlayers = 6;
-	private int numPlayers = 6;
+	private int numPlayers = 2;
 	private Players players = new Players();
 	private Color colours[] = {Color.RED,Color.YELLOW,Color.BLUE,Color.GREEN,Color.MAGENTA,Color.WHITE};
 	private String playerNames[] = {"Dave","Alex","Josh","Fred","Jake","Alice"};
@@ -54,7 +54,7 @@ public class Powergrid extends ApplicationAdapter {
     private Player currentPlayer;
     private int currentPlayerNum = 0;
 
-    private Plant bidingPlant = null;
+    private Plant currentPlant = null;
     private int currentBid = 0;
     private int minBid = 0;
     private String errorMessage = "";
@@ -150,7 +150,53 @@ public class Powergrid extends ApplicationAdapter {
     private void doInput() {
 	    if(phase==2) {
 	        getPlantToChoose();
+        } else if(phase==3) {
+	        buyResources();
         }
+    }
+
+    private void buyResources() {
+        int numPlants = currentPlayer.getPlants().getCards().size();
+        if (numPlants > 0 && Gdx.input.isKeyJustPressed(Input.Keys.NUM_1))
+            buyResourcesFor(1);
+        else if (numPlants > 1 && Gdx.input.isKeyJustPressed(Input.Keys.NUM_2))
+            buyResourcesFor(2);
+        else if (numPlants > 2 && Gdx.input.isKeyJustPressed(Input.Keys.NUM_3))
+            buyResourcesFor(3);
+        else if (numPlants > 3 && Gdx.input.isKeyJustPressed(Input.Keys.NUM_4))
+            buyResourcesFor(4);
+        else if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+            setNextReversePlayer();
+            currentPlant = null;
+        }
+
+        if(currentPlant != null) {
+            displayResourcePlant();
+            if(coal>0 && currentPlayer.getElectros()>Resource.coalPrice[coal-1] && currentPlant.notMaxCoal() && Gdx.input.isKeyJustPressed(Input.Keys.C)) {
+                currentPlant.incCoal();
+                currentPlayer.spend(Resource.coalPrice[coal-1]);
+                coal--;
+            }
+            if(oil>0 && currentPlayer.getElectros()>Resource.oilPrice[oil-1] && currentPlant.notMaxOil() && Gdx.input.isKeyJustPressed(Input.Keys.O)) {
+                currentPlant.incOil();
+                currentPlayer.spend(Resource.oilPrice[oil-1]);
+                oil--;
+            }
+            if(trash>0 && currentPlayer.getElectros()>Resource.trashPrice[trash-1] && currentPlant.notMaxTrash() && Gdx.input.isKeyJustPressed(Input.Keys.T)) {
+                currentPlant.incTrash();
+                currentPlayer.spend(Resource.trashPrice[trash-1]);
+                trash--;
+            }
+            if(nuclear>0 && currentPlayer.getElectros()>Resource.nuclearPrice[nuclear-1] && currentPlant.notMaxNuclear() && Gdx.input.isKeyJustPressed(Input.Keys.N)) {
+                currentPlant.incNuclear();
+                currentPlayer.spend(Resource.nuclearPrice[nuclear-1]);
+                nuclear--;
+            }
+        }
+    }
+
+    private void buyResourcesFor(int p) {
+	    currentPlant = currentPlayer.getPlants().getCards().get(p-1);
     }
 
     private void getPlantToChoose() {
@@ -168,15 +214,26 @@ public class Powergrid extends ApplicationAdapter {
             bidOnPlant(6);
         else if(step > 0 && Gdx.input.isKeyJustPressed(Input.Keys.P))
             passBid();
-        if(bidingPlant!=null) {
+        if(currentPlant !=null) {
             displayCurrentBid();
             if(Gdx.input.isKeyJustPressed(Input.Keys.UP))
                 currentBid+=1;
             else if(Gdx.input.isKeyJustPressed(Input.Keys.DOWN) && currentBid>minBid)
                 currentBid-=1;
-            else if(Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-                movePlantToPlayer(bidingPlant);
-            }
+            else if(Gdx.input.isKeyJustPressed(Input.Keys.ENTER))
+                movePlantToPlayer(currentPlayer, currentPlant);
+            else if(Gdx.input.isKeyJustPressed(Input.Keys.A))
+                movePlantToPlayer(turnOrder.get(0), currentPlant);
+            else if(Gdx.input.isKeyJustPressed(Input.Keys.B))
+                movePlantToPlayer(turnOrder.get(1), currentPlant);
+            else if(numPlayers>2 && Gdx.input.isKeyJustPressed(Input.Keys.C))
+                movePlantToPlayer(turnOrder.get(2), currentPlant);
+            else if(numPlayers>3 && Gdx.input.isKeyJustPressed(Input.Keys.D))
+                movePlantToPlayer(turnOrder.get(3), currentPlant);
+            else if(numPlayers>4 && Gdx.input.isKeyJustPressed(Input.Keys.E))
+                movePlantToPlayer(turnOrder.get(4), currentPlant);
+            else if(numPlayers>5 && Gdx.input.isKeyJustPressed(Input.Keys.F))
+                movePlantToPlayer(turnOrder.get(5), currentPlant);
         }
     }
 
@@ -184,20 +241,26 @@ public class Powergrid extends ApplicationAdapter {
 	    Plant plant = market.getMarket().getCards().get(plantNum-1);
 	    currentBid = plant.getCost();
 	    minBid = currentBid;
-	    bidingPlant = plant;
+	    currentPlant = plant;
     }
 
     private void displayCurrentBid() {
-        bidingPlant.displayPlantBid(batch,font,600,92,currentBid);
+        currentPlant.displayPlantBid(batch,font,600,92,currentBid);
     }
 
-    private void movePlantToPlayer(Plant plant) {
-	    if(currentBid > currentPlayer.getElectros()) {
+
+    private void displayResourcePlant() {
+        currentPlant.displayPlant(batch,font,600,92);
+    }
+
+    private void movePlantToPlayer(Player player, Plant plant) {
+	    if(currentBid > player.getElectros()) {
 	        setErrorMessage("Not enough money");
 	        return;
         }
-	    Cards.move(plant,market.getMarket(),currentPlayer.getPlants());
-	    currentPlayer.spend(currentBid);
+	    Cards.move(plant,market.getMarket(),player.getPlants());
+        player.spend(currentBid);
+        player.setPassed(true);
 	    updateMarket();
 	    passBid();
     }
@@ -207,18 +270,37 @@ public class Powergrid extends ApplicationAdapter {
     }
 
     private void passBid() {
-	    bidingPlant = null;
+	    currentPlant = null;
 	    setNextPlayer();
     }
 
     private void setNextPlayer() {
-        if(currentPlayerNum<numPlayers-1) {
-            currentPlayerNum++;
-            currentPlayer = turnOrder.get(currentPlayerNum);
-
-        } else {
-            phase+=1;
+	    //find first player not yet passed
+        int p=0;
+        for(Player player: turnOrder)
+        {
+            if(!player.hasPassed()) {
+                currentPlayer = player;
+                currentPlayerNum = p;
+                return;
+            }
+            p++;
         }
+        if(step==0) step=1;
+        phase+=1;
+        for (Player player : turnOrder)
+            player.setPassed(false);
+        currentPlayer = reverseTurnOrder.get(0);
+        currentPlayerNum = 0;
+    }
+
+    private void setNextReversePlayer() {
+	    currentPlayerNum+=1;
+	    if(currentPlayerNum>=numPlayers) {
+	        phase+=1;
+	        return;
+        }
+        currentPlayer = reverseTurnOrder.get(currentPlayerNum);
     }
 
     private void doEachPhase() {
@@ -255,8 +337,9 @@ public class Powergrid extends ApplicationAdapter {
     }
 
     private void phase3() {
-
-    }
+        StringBuilder message = new StringBuilder(currentPlayer.getName()+" choose plant to add resources (Enter to finish turn)");
+        displayMessage(message,currentPlayer.getColour());
+	}
 
     private void phase4() {
 

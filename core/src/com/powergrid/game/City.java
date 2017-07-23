@@ -126,7 +126,7 @@ public class City {
     }
 
     public void display(SpriteBatch batch, BitmapFont font, int x, int y) {
-        String desc = String.format("%d. %s",id,name);
+        String desc = String.format("%02d. %s",id,name);
         Color colour = zone.getColour();
         font.setColor(colour);
         font.draw(batch,desc,x,y);

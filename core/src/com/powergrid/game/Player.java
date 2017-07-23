@@ -16,6 +16,7 @@ public class Player implements Comparable<Player>{
     private int numCity = 0;
     private int turnOrder = 0;
     private Color colour;
+    private boolean passed = false;
 
     public Player name(String name) {
         this.name = name;
@@ -38,7 +39,7 @@ public class Player implements Comparable<Player>{
     }
 
     public void display(SpriteBatch batch, BitmapFont font, int x, int y) {
-        String desc = String.format("%d. %s, Electros: %d, Num Plants: %d, Num Cities: %d\n",turnOrder,name,electros,plants.getCards().size(),numCity);
+        String desc = String.format("%c. %s, Electros: %d, Num Plants: %d, Num Cities: %d\n",turnOrder+'A'-1,name,electros,plants.getCards().size(),numCity);
         font.setColor(colour);
         font.draw(batch,desc,x,y);
         plants.displayCardsNum(batch,font,x,y-8);
@@ -96,7 +97,17 @@ public class Player implements Comparable<Player>{
         return colour;
     }
 
-    public void spend(int amount) {
+    public boolean spend(int amount) {
+        if(electros<amount) return true;
         electros -= amount;
+        return false;
+    }
+
+    public boolean hasPassed() {
+        return passed;
+    }
+
+    public void setPassed(boolean passed) {
+        this.passed = passed;
     }
 }
