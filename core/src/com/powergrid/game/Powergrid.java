@@ -428,7 +428,7 @@ public class Powergrid extends ApplicationAdapter {
         }
 	    Cards.move(plant,market.getMarket(),player.getPlants());
         player.spend(currentBid);
-        player.setPassed(true);
+
 	    updateMarket();
 	    passBid();
     }
@@ -438,6 +438,7 @@ public class Powergrid extends ApplicationAdapter {
     }
 
     private void passBid() {
+        currentPlayer.setPassed(true);
 	    currentPlant = null;
 	    setNextPlayer();
     }
