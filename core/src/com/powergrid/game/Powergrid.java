@@ -29,7 +29,7 @@ public class Powergrid extends ApplicationAdapter {
 	private Players players = new Players();
 	private Color colours[] = {Color.RED,Color.YELLOW,Color.BLUE,Color.GREEN,Color.MAGENTA,Color.WHITE};
 	private String playerNames[] = {"Dave","Alex","Josh","Fred","Jake","Alice"};
-	private String phases[] = {"Init","Play Order","Auction","Resources","Cities","Bureaucracy"};
+	private String phases[] = {"Init","Play Order","Auction","Resources","Cities","Payment","Bureaucracy"};
 
     public static final int areas[] = {0,0,3,3,4,5,5};
     public static final int maxPlants[] = {0,0,4,3,3,3,3};
@@ -61,6 +61,7 @@ public class Powergrid extends ApplicationAdapter {
     private long errorTime = 0;
     private String cityNumString = "";
     private int cityCost = 0;
+    private String number = "";
 
 	@Override
 	public void create () {
@@ -158,6 +159,113 @@ public class Powergrid extends ApplicationAdapter {
 	        buyResources();
         } else if(phase==4) {
 	        buyCity();
+        } else if(phase==5) {
+	        chooseHowManyCitiesToPower();
+        } else if(phase==6) {
+            resupplyResources();
+            updatePlantMarket();
+            phase=1;
+        }
+    }
+
+    private void resupplyResources() {
+        coal+=Resource.coalReplenish[numPlayers][step];
+        if(coal>Resource.maxCoal) coal = Resource.maxCoal;
+
+        oil+=Resource.oilReplenish[numPlayers][step];
+        if(oil>Resource.maxOil) oil = Resource.maxOil;
+
+        trash+=Resource.trashReplenish[numPlayers][step];
+        if(trash>Resource.maxTrash) trash = Resource.maxTrash;
+
+        nuclear+=Resource.nuclearReplenish[numPlayers][step];
+        if(nuclear>Resource.maxNuclear) nuclear = Resource.maxNuclear;
+    }
+
+    private void updatePlantMarket() {
+        market.updatePlantMarket(deck,step);
+    }
+
+
+    private void chooseHowManyCitiesToPower() {
+	    int digit = getDigit();
+	    if(digit>-1) {
+	        number += digit;
+        }
+        displayNum();
+	    if (Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE) && number.length()>0) {
+            number = number.substring(0, number.length() - 1);
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+            int numCity = Integer.parseInt(number);
+            if (numCity > currentPlayer.getNumCity()) {
+                errorMessage = String.format("You only have %d cities", currentPlayer.getNumCity());
+                return;
+            }
+            number = "";
+            payCurrentPlayer(numCity);
+            setNextReversePlayer();
+        }
+    }
+
+    private void payCurrentPlayer(int numCities) {
+	    int citiesSupplied = 0;
+	    for(Plant plant : currentPlayer.getPlants().getCards()) {
+	        if(enoughResources(plant)) {
+	            citiesSupplied += reduceResources(plant);
+            }
+            if(citiesSupplied>=numCities)
+                break;
+        }
+        currentPlayer.spend(-payment[numCities]);
+    }
+
+    private boolean enoughResources(Plant plant) {
+	    Resource resource = plant.getResource();
+        if(resource==Resource.coal && plant.getCoal()>=plant.getNumResource()) return true;
+        if(resource==Resource.coaloil && (plant.getCoal() + plant.getOil())>=plant.getNumResource()) return true;
+        if(resource==Resource.oil && plant.getOil()>=plant.getNumResource()) return true;
+        if(resource==Resource.trash && plant.getTrash()>=plant.getNumResource()) return true;
+        if(resource==Resource.nuclear && plant.getNuclear()>=plant.getNumResource()) return true;
+        if(resource==Resource.wind) return true;
+        if(resource==Resource.fusion) return true;
+
+        return false;
+    }
+
+    private int reduceResources(Plant plant) {
+        Resource resource = plant.getResource();
+        if(resource==Resource.coal ) {
+            plant.setCoal(plant.getCoal()-plant.getNumResource());
+        } else if(resource==Resource.oil ) {
+            plant.setOil(plant.getOil()-plant.getNumResource());
+        } else if(resource==Resource.coaloil ) {
+            int coal = plant.getCoal();
+            int oil = plant.getOil();
+            int numResources = plant.getNumResource();
+            while(numResources>0) {
+                if(coal>0 && numResources>0) {
+                    coal--;
+                    plant.setCoal(coal);
+                    numResources--;
+                }
+                if(oil>0 && numResources>0) {
+                    oil--;
+                    plant.setOil(oil);
+                    numResources--;
+                }
+            }
+        } else if(resource==Resource.trash ) {
+            plant.setTrash(plant.getTrash()-plant.getNumResource());
+        } else if(resource==Resource.nuclear ) {
+            plant.setNuclear(plant.getNuclear()-plant.getNumResource());
+        }
+        return plant.getNumCity();
+    }
+
+    private void displayNum() {
+	    if(number.length()>0) {
+	        font.setColor(Color.WHITE);
+            font.draw(batch,number+" cities",600,92);
         }
     }
 
@@ -424,7 +532,9 @@ public class Powergrid extends ApplicationAdapter {
     }
 
     private void phase5() {
-
+	    //Bureaucracy
+        StringBuilder message = new StringBuilder(currentPlayer.getName()+" how many cities you want to power?");
+        displayMessage(message,currentPlayer.getColour());
     }
 
     private void bidForPlant() {

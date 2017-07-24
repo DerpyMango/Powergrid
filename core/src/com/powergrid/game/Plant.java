@@ -99,6 +99,18 @@ public class Plant {
         return plantType[plant];
     }
 
+    public int getNumCity() {
+        return numCity;
+    }
+
+    public int getNumResource() {
+        return numResource;
+    }
+
+    public Resource getResource() {
+        return resource;
+    }
+
     public void displayPlant(SpriteBatch batch, BitmapFont font, int x, int y) {
         StringBuilder plantDesc = new StringBuilder(String.format("[%d] %s Fuel: %d Cities: %d",cost,resource.getName(),numResource,numCity));
         if (coal>0)  plantDesc.append(" coal: "+coal);

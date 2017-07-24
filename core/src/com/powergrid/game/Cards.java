@@ -35,6 +35,11 @@ public class Cards {
         to.add(plant);
     }
 
+    public static void moveBottom(Plant plant, Cards from, Cards to) {
+        from.remove(plant);
+        to.addBottom(plant);
+    }
+
     public void remove(Plant plant) {
         cards.remove(plant);
     }
@@ -42,6 +47,8 @@ public class Cards {
     public void add(Plant plant) {
         cards.add(plant);
     }
+
+    public void addBottom(Plant plant) {cards.add(0,plant);}
 
     public boolean isIn(Plant plant) {
         return cards.contains(plant);
@@ -67,5 +74,17 @@ public class Cards {
             }
         }
         return lowest;
+    }
+
+    public Plant getHighest() {
+        int cost = 0;
+        Plant highest = null;
+        for(Plant plant : cards) {
+            if(plant.getCost()>cost) {
+                highest = plant;
+                cost = plant.getCost();
+            }
+        }
+        return highest;
     }
 }

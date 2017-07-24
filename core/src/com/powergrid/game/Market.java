@@ -49,4 +49,10 @@ public class Market {
         Plant lowest = future.getLowest();
         Cards.move(lowest,future,market);
     }
+
+    public void updatePlantMarket(Deck deck, int step) {
+        Plant highest = future.getHighest();
+        Cards.moveBottom(highest,future,deck);
+        deck.moveTopTo(future);
+    }
 }
