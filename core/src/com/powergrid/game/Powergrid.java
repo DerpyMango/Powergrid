@@ -381,7 +381,7 @@ public class Powergrid extends ApplicationAdapter {
         else if(step==3 && Gdx.input.isKeyJustPressed(Input.Keys.NUM_6))
             bidOnPlant(6);
         else if(step > 0 && Gdx.input.isKeyJustPressed(Input.Keys.P))
-            passBid();
+            passBid(currentPlayer);
         if(currentPlant !=null) {
             displayCurrentBid();
             if(Gdx.input.isKeyJustPressed(Input.Keys.UP))
@@ -430,15 +430,15 @@ public class Powergrid extends ApplicationAdapter {
         player.spend(currentBid);
 
 	    updateMarket();
-	    passBid();
+	    passBid(player);
     }
 
     private void updateMarket() {
 	    market.updateMarket(deck,step,phase);
     }
 
-    private void passBid() {
-        currentPlayer.setPassed(true);
+    private void passBid(Player player) {
+        player.setPassed(true);
 	    currentPlant = null;
 	    setNextPlayer();
     }
