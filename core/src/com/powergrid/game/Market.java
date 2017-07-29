@@ -55,4 +55,25 @@ public class Market {
         Cards.moveBottom(highest,future,deck);
         deck.moveTopTo(future);
     }
+
+    public boolean removeLowestPlantInMarket(Deck deck, int step, int lowest) {
+        boolean repeat = false;
+        boolean hasRemoved = false;
+        Plant plantToRemove = null;
+        do {
+            for(Plant plant : market.getCards()) {
+                if(plant.getCost()<=lowest) {
+                    plantToRemove = plant;
+                    hasRemoved = true;
+                    break;
+                }
+            }
+            if(plantToRemove!=null) {
+                market.remove(plantToRemove);
+                updatePlantMarket(deck, step);
+                plantToRemove = null;
+            }
+        } while (repeat);
+        return hasRemoved;
+    }
 }

@@ -48,7 +48,7 @@ public class Cards {
         cards.add(plant);
     }
 
-    public void addBottom(Plant plant) {cards.add(0,plant);}
+    public void addBottom(Plant plant) {cards.add(cards.size()-1,plant);}
 
     public boolean isIn(Plant plant) {
         return cards.contains(plant);

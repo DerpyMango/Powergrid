@@ -40,4 +40,14 @@ public class Players {
     public Player getPlayer(int p) {
         return players.get(p);
     }
+
+    public int getMostCities() {
+        int most = 0;
+        for(Player player : players) {
+            if(player.getNumCity()>most) {
+                most = player.getNumCity();
+            }
+        }
+        return most;
+    }
 }

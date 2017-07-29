@@ -154,7 +154,11 @@ public class Powergrid extends ApplicationAdapter {
 
     private void doInput() {
 	    if(phase==2) {
-	        getPlantToChoose();
+	        if(currentPlayer.getPlants().getCards().size() >= maxPlants[numPlayers]) {
+	            getPlantToDiscard();
+            } else {
+                getPlantToChoose();
+            }
         } else if(phase==3) {
 	        buyResources();
         } else if(phase==4) {
@@ -198,12 +202,13 @@ public class Powergrid extends ApplicationAdapter {
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
             int numCity = Integer.parseInt(number);
             if (numCity > currentPlayer.getNumCity()) {
-                errorMessage = String.format("You only have %d cities", currentPlayer.getNumCity());
-                return;
+                setErrorMessage(String.format("You only have %d cities", currentPlayer.getNumCity()));
+                number = "";
+            } else {
+                number = "";
+                payCurrentPlayer(numCity);
+                setNextReversePlayer();
             }
-            number = "";
-            payCurrentPlayer(numCity);
-            setNextReversePlayer();
         }
     }
 
@@ -216,7 +221,7 @@ public class Powergrid extends ApplicationAdapter {
             if(citiesSupplied>=numCities)
                 break;
         }
-        currentPlayer.spend(-payment[numCities]);
+        currentPlayer.spend(-payment[Math.min(citiesSupplied,numCities)]);
     }
 
     private boolean enoughResources(Plant plant) {
@@ -287,13 +292,25 @@ public class Powergrid extends ApplicationAdapter {
         if (cityNumString.length()==2 && Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
             int c = Integer.parseInt(cityNumString);
             City city = City.getCity(c);
-            currentPlayer.spend(cityCost);
-            city.setTen(currentPlayer);
-            currentPlayer.incNumCity();
-            cityNumString = "";
+            if(cityCost>currentPlayer.getElectros()) {
+                setErrorMessage("Not enough money");
+            } else {
+                currentPlayer.spend(cityCost);
+                city.setTen(currentPlayer);
+                currentPlayer.incNumCity();
+                cityNumString = "";
+                removeLowestPlantInMarket();
+            }
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.P)) {
 	        setNextReversePlayer();
+        }
+    }
+
+    private void removeLowestPlantInMarket() {
+	    int lowest = players.getMostCities();
+	    if (market.removeLowestPlantInMarket(deck,step,lowest)) {
+            updateMarket();
         }
     }
 
@@ -367,6 +384,24 @@ public class Powergrid extends ApplicationAdapter {
 	    currentPlant = currentPlayer.getPlants().getCards().get(p-1);
     }
 
+    private void getPlantToDiscard() {
+        if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_1))
+            discardPlant(1);
+        else if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_2))
+            discardPlant(2);
+        else if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_3))
+            discardPlant(3);
+        else if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_4))
+            discardPlant(4);
+        else if(step > 0 && Gdx.input.isKeyJustPressed(Input.Keys.P))
+            passBid(currentPlayer);
+    }
+
+    private void discardPlant(int p) {
+	    Plant plant = currentPlayer.getPlants().getCards().get(p-1);
+        currentPlayer.getPlants().remove(plant);
+    }
+
     private void getPlantToChoose() {
         if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_1))
             bidOnPlant(1);
@@ -415,7 +450,6 @@ public class Powergrid extends ApplicationAdapter {
     private void displayCurrentBid() {
         currentPlant.displayPlantBid(batch,font,600,92,currentBid);
     }
-
 
     private void displayResourcePlant() {
         currentPlant.displayPlant(batch,font,600,92);
@@ -539,7 +573,12 @@ public class Powergrid extends ApplicationAdapter {
     }
 
     private void bidForPlant() {
-        StringBuilder message = new StringBuilder(currentPlayer.getName()+" choose plant to bid on");
+        StringBuilder message = new StringBuilder(currentPlayer.getName());
+	    if(currentPlayer.getPlants().getCards().size() < maxPlants[numPlayers]) {
+            message.append(" choose plant to bid on");
+        } else {
+	        message.append(" choose plant to discard");
+        }
         if(step>0)
             message.append(" or press P to pass");
         displayMessage(message,currentPlayer.getColour());
