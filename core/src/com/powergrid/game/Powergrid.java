@@ -62,6 +62,7 @@ public class Powergrid extends ApplicationAdapter {
     private String cityNumString = "";
     private int cityCost = 0;
     private String number = "";
+    private int numPassed = 0;
 
 	@Override
 	public void create () {
@@ -82,12 +83,12 @@ public class Powergrid extends ApplicationAdapter {
         reverseTurnOrder = players.getReverseTurnOrder();
 
         //6 active zones for 6 players
-        Zone.brown.setActive(true);
-        Zone.yellow.setActive(true);
-        Zone.cyan.setActive(true);
-        Zone.red.setActive(true);
+        Zone.brown.setActive(false);
+        Zone.cyan.setActive(false);
+        Zone.red.setActive(false);
         Zone.blue.setActive(true);
         Zone.magenta.setActive(true);
+        Zone.yellow.setActive(true);
 
         TextField numPlayers = new TextField("", skin);
         numPlayers.setMessageText("No. players");
@@ -153,7 +154,9 @@ public class Powergrid extends ApplicationAdapter {
     }
 
     private void doInput() {
-	    if(phase==2) {
+	    if (phase==1) {
+	        numPassed = 0;
+        } else if(phase==2) {
 	        if(currentPlayer.getPlants().getCards().size() >= maxPlants[numPlayers]) {
 	            getPlantToDiscard();
             } else {
@@ -199,7 +202,7 @@ public class Powergrid extends ApplicationAdapter {
         displayNum();
 	    if (Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE) && number.length()>0) {
             number = number.substring(0, number.length() - 1);
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) && number.length()>0) {
             int numCity = Integer.parseInt(number);
             if (numCity > currentPlayer.getNumCity()) {
                 setErrorMessage(String.format("You only have %d cities", currentPlayer.getNumCity()));
@@ -231,8 +234,7 @@ public class Powergrid extends ApplicationAdapter {
         if(resource==Resource.oil && plant.getOil()>=plant.getNumResource()) return true;
         if(resource==Resource.trash && plant.getTrash()>=plant.getNumResource()) return true;
         if(resource==Resource.nuclear && plant.getNuclear()>=plant.getNumResource()) return true;
-        if(resource==Resource.wind) return true;
-        if(resource==Resource.fusion) return true;
+        if(resource==Resource.wind || resource==Resource.fusion) return true;
 
         return false;
     }
@@ -283,7 +285,7 @@ public class Powergrid extends ApplicationAdapter {
             int c = Integer.parseInt(cityNumString);
             City city = City.getCity(c);
             if(currentPlayer.getNumCity()>0) {
-                cityCost = city.getPrice(step,currentPlayer);
+                cityCost = city.getPrice(step,currentPlayer); //check
                 cityCost += city.findCheapestRoute(currentPlayer);
             } else {
                 cityCost = 10;
@@ -295,21 +297,44 @@ public class Powergrid extends ApplicationAdapter {
             if(cityCost>currentPlayer.getElectros()) {
                 setErrorMessage("Not enough money");
             } else {
-                currentPlayer.spend(cityCost);
-                city.setTen(currentPlayer);
-                currentPlayer.incNumCity();
+                if(city.getTen()==null) {
+                    currentPlayer.spend(cityCost);
+                    city.setTen(currentPlayer);
+                    currentPlayer.incNumCity();
+                } else if (step>1 && city.getTen()!=null && city.getTen() != currentPlayer && city.getFifteen()==null) {
+                    currentPlayer.spend(cityCost);
+                    city.setFifteen(currentPlayer);
+                    currentPlayer.incNumCity();
+                } else if (step>2 && city.getTen()!=null && city.getTen() != currentPlayer && city.getFifteen()!=null && city.getFifteen()!=currentPlayer
+                        && city.getTwenty()==null) {
+                    currentPlayer.spend(cityCost);
+                    city.setTwenty(currentPlayer);
+                    currentPlayer.incNumCity();
+                } else {
+                    setErrorMessage("Can't buy this city");
+                }
                 cityNumString = "";
                 removeLowestPlantInMarket();
+                if(step==1 && currentPlayer.getNumCity()>=step2[numPlayers]) {
+                    step = 2;
+                    removeLowestPlant();
+                }
             }
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.P)) {
+            number = "";
 	        setNextReversePlayer();
         }
     }
 
+    private void removeLowestPlant() {
+        market.removeLowestPlant(deck,step);
+        updateMarket();
+    }
+
     private void removeLowestPlantInMarket() {
-	    int lowest = players.getMostCities();
-	    if (market.removeLowestPlantInMarket(deck,step,lowest)) {
+        int lowest = players.getMostCities();
+        if (market.removeLowestPlantInMarket(deck,step,lowest)) {
             updateMarket();
         }
     }
@@ -393,8 +418,10 @@ public class Powergrid extends ApplicationAdapter {
             discardPlant(3);
         else if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_4))
             discardPlant(4);
-        else if(step > 0 && Gdx.input.isKeyJustPressed(Input.Keys.P))
+        else if(step > 0 && Gdx.input.isKeyJustPressed(Input.Keys.P)) {
+            numPassed++;
             passBid(currentPlayer);
+        }
     }
 
     private void discardPlant(int p) {
@@ -415,8 +442,10 @@ public class Powergrid extends ApplicationAdapter {
             bidOnPlant(5);
         else if(step==3 && Gdx.input.isKeyJustPressed(Input.Keys.NUM_6))
             bidOnPlant(6);
-        else if(step > 0 && Gdx.input.isKeyJustPressed(Input.Keys.P))
+        else if(step > 0 && Gdx.input.isKeyJustPressed(Input.Keys.P)) {
+            numPassed++;
             passBid(currentPlayer);
+        }
         if(currentPlant !=null) {
             displayCurrentBid();
             if(Gdx.input.isKeyJustPressed(Input.Keys.UP))
@@ -468,7 +497,11 @@ public class Powergrid extends ApplicationAdapter {
     }
 
     private void updateMarket() {
-	    market.updateMarket(deck,step,phase);
+	    if (market.updateMarket(deck,step,phase)) {
+	        //Do step 3 stuff
+            step=3;
+            removeLowestPlant();
+        }
     }
 
     private void passBid(Player player) {
@@ -496,6 +529,8 @@ public class Powergrid extends ApplicationAdapter {
         phase+=1;
         for (Player player : turnOrder)
             player.setPassed(false);
+        if(numPassed>=numPlayers)
+            removeLowestPlant();
         initReverseTurnOrderPlayer();
     }
 

@@ -178,12 +178,14 @@ public class City {
         List<Connection> connections = Connection.getConnections(this);
         for(Connection connection : connections) {
             City city = connection.otherCity(this);
-            int cost = connection.getCost() + prevCost;
-            //System.out.println("City: "+city.getName()+" Cost: "+(cost));
-            if(cost < city.getTotalCost()) {
-                city.setTotalCost(cost);
-                //System.out.println("--go in--");
-                city.markConnectionCosts(cost);
+            if(city.isActive()) {
+                int cost = connection.getCost() + prevCost;
+                //System.out.println("City: "+city.getName()+" Cost: "+(cost));
+                if (cost < city.getTotalCost()) {
+                    city.setTotalCost(cost);
+                    //System.out.println("--go in--");
+                    city.markConnectionCosts(cost);
+                }
             }
             //System.out.println("--return--");
         }
