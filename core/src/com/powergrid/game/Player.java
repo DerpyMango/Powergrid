@@ -39,7 +39,7 @@ public class Player implements Comparable<Player>{
     }
 
     public void display(SpriteBatch batch, BitmapFont font, int x, int y) {
-        String desc = String.format("%c. %s, Electros: %d, Num Plants: %d, Num Cities: %d\n",turnOrder+'A'-1,name,electros,plants.getCards().size(),numCity);
+        String desc = String.format("%c. %s, Electros: %d, Num Plants: %d, Num Cities: %d/%d/%d\n",turnOrder+'A'-1,name,electros,plants.getCards().size(),getMaxNumberOfCitiesCanPower(),getNumberOfCitiesCanPower(),numCity);
         font.setColor(colour);
         font.draw(batch,desc,x,y);
         plants.displayCardsNum(batch,font,x,y-8);
@@ -58,6 +58,36 @@ public class Player implements Comparable<Player>{
             return 0;
         else
             return plants.getCards().stream().map(Plant::getCost).max(Integer::compare).get();
+    }
+
+    public int getNumberOfCitiesCanPower() {
+        int numCities = 0;
+        for(Plant plant : getPlants().getCards()) {
+            if(enoughResources(plant)) {
+                numCities+=plant.getNumCity();
+            }
+        }
+        return numCities;
+    }
+
+    public int getMaxNumberOfCitiesCanPower() {
+        int numCities = 0;
+        for(Plant plant : getPlants().getCards()) {
+            numCities+=plant.getNumCity();
+        }
+        return numCities;
+    }
+
+    public boolean enoughResources(Plant plant) {
+        Resource resource = plant.getResource();
+        if(resource==Resource.coal && plant.getCoal()>=plant.getNumResource()) return true;
+        if(resource==Resource.coaloil && (plant.getCoal() + plant.getOil())>=plant.getNumResource()) return true;
+        if(resource==Resource.oil && plant.getOil()>=plant.getNumResource()) return true;
+        if(resource==Resource.trash && plant.getTrash()>=plant.getNumResource()) return true;
+        if(resource==Resource.nuclear && plant.getNuclear()>=plant.getNumResource()) return true;
+        if(resource==Resource.wind || resource==Resource.fusion) return true;
+
+        return false;
     }
 
     public void setTurnOrder(int turnOrder) {
