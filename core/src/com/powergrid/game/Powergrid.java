@@ -40,8 +40,9 @@ public class Powergrid extends ApplicationAdapter {
 	public static final int payment[] = {10,22,33,44,54,64,73,82,90,98,105,112,118,124,129,134,138,142,145,148,150,0};
 
 	public static final int H = 8;
-	public static final int col2 = 65;
-	public static final int map = 80;
+	public static final int col2 = 40;
+	public static final int col3 = 60;
+	public static final int map = 85;
 
 	private int step = 0; //step 0 = initialisation step before game starts properly
 	private int phase = 1;
@@ -85,6 +86,10 @@ public class Powergrid extends ApplicationAdapter {
         players.initPlayers(numPlayers,playerNames,colours);
         turnOrder = players.getTurnOrder();
         reverseTurnOrder = players.getReverseTurnOrder();
+
+        City.wilhelmshaven.setTen(players.getPlayer(0));
+        City.wilhelmshaven.setFifteen(players.getPlayer(1));
+        City.wilhelmshaven.setTwenty(players.getPlayer(2));
 
         //6 active zones for 6 players
         Zone.brown.setActive(true);
@@ -316,16 +321,17 @@ public class Powergrid extends ApplicationAdapter {
                 } else {
                     setErrorMessage("Can't buy this city");
                 }
-                cityNumString = "";
                 removeLowestPlantInMarket();
                 if(step==1 && currentPlayer.getNumCity()>=step2[numPlayers]) {
                     step = 2;
                     removeLowestPlant();
                 }
             }
+            cityNumString = "";
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.P)) {
             number = "";
+            cityNumString = "";
 	        setNextReversePlayer();
         }
     }
@@ -623,6 +629,7 @@ public class Powergrid extends ApplicationAdapter {
     }
 
     private void displayMessage(StringBuilder message, Color colour) {
+	    currentPlayer.display(display, col2,47);
 	    display.text(col2,48,message.toString(),colour);
     }
 
@@ -648,11 +655,11 @@ public class Powergrid extends ApplicationAdapter {
     }
 
     private void displayMarket(int step) {
-	    market.displayMarket(step,display,0,10);
+	    market.displayMarket(step,display,0,7);
     }
 
     private void displayPlayers() {
-	    int y = 21;
+	    int y = 18;
         for(Player player : turnOrder) {
             player.display(display,0,y);
             y+=6;
@@ -663,7 +670,7 @@ public class Powergrid extends ApplicationAdapter {
 	    int y=1;
         for(City city : City.germany) {
             if (city.getZone().isActive()) {
-                city.display(display,col2,map,y);
+                city.display(display,col3,map,y);
                 y+=1;
             }
         }

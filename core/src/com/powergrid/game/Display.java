@@ -25,10 +25,10 @@ public class Display {
     }
 
     private int convertX(int x) {
-        return x* SCALE;
+        return x * SCALE;
     }
 
     private int convertY(int y) {
-        return height -y* SCALE;
+        return height-y * SCALE;
     }
 }

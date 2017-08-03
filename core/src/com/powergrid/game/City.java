@@ -160,13 +160,13 @@ public class City {
         Color colour = zone.getColour();
         display.text(x,y,desc,colour);
         if (ten!=null) {
-            display.text(x+16,y,ten.getName(),ten.getColour());
+            display.text(x+10,y,ten.getName(),ten.getColour());
         }
         if (fifteen!=null) {
-            display.text(x+24,y,fifteen.getName(),fifteen.getColour());
+            display.text(x+14,y,fifteen.getName(),fifteen.getColour());
         }
         if (twenty!=null) {
-            display.text(x+32,y,twenty.getName(),twenty.getColour());
+            display.text(x+18,y,twenty.getName(),twenty.getColour());
         }
 
         displayMap(display, mx,0);
@@ -176,6 +176,7 @@ public class City {
         int cx = getX()+x;
         int cy = getY()+y;
         display.text(cx,cy,name,zone.getColour());
+        displayOwners(display, cx,cy+1);
         List<Connection> connections = Connection.getToConnections(this);
         for(Connection connection: connections) {
             City city = connection.otherCity(this);
@@ -189,6 +190,12 @@ public class City {
                 display.text(dx,dy,""+cost,Color.WHITE);
             }
         }
+    }
+
+    private void displayOwners(Display display, int x, int y) {
+        if(ten!=null) display.text(x,y,"*",ten.getColour());
+        if(fifteen!=null) display.text(x+1,y,"*",fifteen.getColour());
+        if(twenty!=null) display.text(x+2,y,"*",twenty.getColour());
     }
 
     private void drawDot(Display display, int x1, int y1, int x2, int y2) {
