@@ -27,13 +27,11 @@ public class Market {
         deck.moveTopTo(future);
     }
 
-    public void displayMarket(int step, SpriteBatch batch, BitmapFont font, int x, int y) {
-        font.setColor(Color.GREEN);
-        font.draw(batch,"Future",x,y);
-        future.displayCards(batch,font,x,y-8);
-        font.setColor(Color.GREEN);
-        font.draw(batch,"Market",x,y-40);
-        market.displayCardsNum(batch,font,x,y-40-8);
+    public void displayMarket(int step, Display display, int x, int y) {
+        display.text(x,y,"Future",Color.GREEN);
+        future.displayCards(display,x,y+1);
+        display.text(x,y+5,"Actual",Color.GREEN);
+        market.displayCardsNum(display,x,y+6);
     }
 
     public Cards getMarket() {

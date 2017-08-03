@@ -12,20 +12,20 @@ import java.util.List;
 public class Cards {
     protected List<Plant> cards = new ArrayList<>();
 
-    public void displayCards(SpriteBatch batch, BitmapFont font, int x, int y) {
+    public void displayCards(Display display, int x, int y) {
         int yy = y;
         for(Plant plant : cards) {
-            plant.displayPlant(batch,font,x+8,yy);
-            yy-=8;
+            plant.displayPlant(display,x+1,yy);
+            yy++;
         }
     }
 
-    public void displayCardsNum(SpriteBatch batch, BitmapFont font, int x, int y) {
+    public void displayCardsNum(Display display, int x, int y) {
         int yy = y;
         int i = 1;
         for(Plant plant : cards) {
-            plant.displayPlantNum(i,batch,font,x+8,yy);
-            yy-=8;
+            plant.displayPlantNum(i,display,x+1,yy);
+            yy++;
             i++;
         }
     }

@@ -9,7 +9,7 @@ public class Display {
     private BitmapFont font;
     private int height;
 
-    public static final int SCALE = 8;
+    public static final int SCALE = 12;
 
     public Display(SpriteBatch batch, BitmapFont font, int windowHeight) {
         this.batch = batch;

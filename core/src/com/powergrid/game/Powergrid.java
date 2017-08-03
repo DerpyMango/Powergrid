@@ -26,7 +26,7 @@ public class Powergrid extends ApplicationAdapter {
     private Display display;
 
 	private static final int maxPlayers = 6;
-	private int numPlayers = 2;
+	private int numPlayers = 6;
 	private Players players = new Players();
 	private Color colours[] = {Color.RED,Color.YELLOW,Color.BLUE,Color.GREEN,Color.MAGENTA,Color.WHITE};
 	private String playerNames[] = {"Dave","Alex","Josh","Fred","Jake","Alice"};
@@ -40,6 +40,8 @@ public class Powergrid extends ApplicationAdapter {
 	public static final int payment[] = {10,22,33,44,54,64,73,82,90,98,105,112,118,124,129,134,138,142,145,148,150,0};
 
 	public static final int H = 8;
+	public static final int col2 = 65;
+	public static final int map = 80;
 
 	private int step = 0; //step 0 = initialisation step before game starts properly
 	private int phase = 1;
@@ -273,8 +275,7 @@ public class Powergrid extends ApplicationAdapter {
 
     private void displayNum() {
 	    if(number.length()>0) {
-	        font.setColor(Color.WHITE);
-            font.draw(batch,number+" cities",600,92);
+            display.text(col2,49,number+" cities",Color.WHITE);
         }
     }
 
@@ -358,13 +359,13 @@ public class Powergrid extends ApplicationAdapter {
 
     private void displayCityFromNum() {
 	    StringBuilder cityDesc = new StringBuilder(String.format("%s.",cityNumString));
-        font.setColor(Color.WHITE);
+        Color colour = Color.WHITE;
 	    if(cityNumString.length()==2) {
 	        int city = Integer.parseInt(cityNumString);
 	        cityDesc.append(String.format(" %s Cost: %d",City.getCity(city).getName(),cityCost));
-            font.setColor(City.getCity(city).getColor());
+            colour = City.getCity(city).getColor();
         }
-        font.draw(batch,cityDesc,600,92);
+	    display.text(col2,49,cityDesc.toString(),colour);
     }
 
     private void buyResources() {
@@ -479,11 +480,11 @@ public class Powergrid extends ApplicationAdapter {
     }
 
     private void displayCurrentBid() {
-        currentPlant.displayPlantBid(batch,font,600,92,currentBid);
+        currentPlant.displayPlantBid(display,col2,49,currentBid);
     }
 
     private void displayResourcePlant() {
-        currentPlant.displayPlant(batch,font,600,92);
+        currentPlant.displayPlant(display,col2,49);
     }
 
     private void movePlantToPlayer(Player player, Plant plant) {
@@ -622,8 +623,7 @@ public class Powergrid extends ApplicationAdapter {
     }
 
     private void displayMessage(StringBuilder message, Color colour) {
-	    font.setColor(colour);
-	    font.draw(batch,message,600,100);
+	    display.text(col2,48,message.toString(),colour);
     }
 
     private void setErrorMessage(String errorMessage) {
@@ -634,8 +634,7 @@ public class Powergrid extends ApplicationAdapter {
     private void displayErrorMessage() {
 	    if(errorTime==0) return;
         font.setColor(Color.PURPLE);
-        //font.draw(batch,errorMessage,600,84);
-        display.text(75,50,errorMessage,Color.PURPLE);
+        display.text(col2,50,errorMessage,Color.PURPLE);
         if (TimeUtils.millis()>errorTime) {
             errorTime = 0;
             errorMessage = "";
@@ -644,21 +643,19 @@ public class Powergrid extends ApplicationAdapter {
 
     private void displayHeader() {
 	    font.setColor(Color.RED);
-	    //font.draw(batch,"Step: "+step+" Phase: "+phase+" "+phases[phase], 200, 472);
 	    display.text(12,1,"Step: "+step+" Phase: "+phase+" "+phases[phase],Color.RED);
 	    Resource.displayResources(display,coal,oil,trash,nuclear,0,2);
     }
 
     private void displayMarket(int step) {
-	    market.displayMarket(step,batch,font,0,420);
+	    market.displayMarket(step,display,0,10);
     }
 
     private void displayPlayers() {
-	    //List<Player> turnOrder = players.getTurnOrder();
-	    int y = 0;
+	    int y = 21;
         for(Player player : turnOrder) {
-            player.display(batch,font,0,320-y);
-            y+=48;
+            player.display(display,0,y);
+            y+=6;
         }
     }
 
@@ -666,7 +663,7 @@ public class Powergrid extends ApplicationAdapter {
 	    int y=1;
         for(City city : City.germany) {
             if (city.getZone().isActive()) {
-                city.display(display,75,y);
+                city.display(display,col2,map,y);
                 y+=1;
             }
         }

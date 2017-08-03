@@ -38,11 +38,10 @@ public class Player implements Comparable<Player>{
         return this;
     }
 
-    public void display(SpriteBatch batch, BitmapFont font, int x, int y) {
-        String desc = String.format("%c. %s, Electros: %d, Num Plants: %d, Num Cities: %d/%d/%d\n",turnOrder+'A'-1,name,electros,plants.getCards().size(),getMaxNumberOfCitiesCanPower(),getNumberOfCitiesCanPower(),numCity);
-        font.setColor(colour);
-        font.draw(batch,desc,x,y);
-        plants.displayCardsNum(batch,font,x,y-8);
+    public void display(Display display, int x, int y) {
+        String desc = String.format("%c. %s, Electros: %d, Num Plants: %d, Num Cities: %d/%d/%d",turnOrder+'A'-1,name,electros,plants.getCards().size(),getMaxNumberOfCitiesCanPower(),getNumberOfCitiesCanPower(),numCity);
+        display.text(x,y,desc,colour);
+        plants.displayCardsNum(display,x,y+1);
     }
 
     public Cards getPlants() {

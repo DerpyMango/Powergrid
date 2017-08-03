@@ -163,6 +163,15 @@ public class Connection {
         return connectionsTo;
     }
 
+    public static List<Connection> getToConnections(City city) {
+        List<Connection> connectionsTo = new ArrayList<>();
+        for(int i=0; i<numConnections; i++) {
+            if(connections[i].from==city)
+                connectionsTo.add(connections[i]);
+        }
+        return connectionsTo;
+    }
+
     public City otherCity(City city) {
         if(from==city)
             return to;

@@ -57,7 +57,7 @@ public class City {
     public static City leipzig = new City(22).name("Leipzig").zone(Zone.yellow).coords(108,96);
     public static City fulda = new City(23).name("Fulda").zone(Zone.yellow).coords(93,114);
     public static City erfurt = new City(24).name("Erfurt").zone(Zone.yellow).coords(91,103);
-    public static City dresden = new City(25).name("Dresden").zone(Zone.yellow).coords(103,104);
+    public static City dresden = new City(25).name("Dresden").zone(Zone.yellow).coords(133,104);
     public static City wurzburg = new City(26).name("Wurzburg").zone(Zone.yellow).coords(72,134);
     public static City nurnberg = new City(27).name("Nurnberg").zone(Zone.yellow).coords(92,143);
 
@@ -155,7 +155,7 @@ public class City {
         return totalCost;
     }
 
-    public void display(Display display, int x, int y) {
+    public void display(Display display, int x, int mx, int y) {
         String desc = String.format("%02d. %s",id,name);
         Color colour = zone.getColour();
         display.text(x,y,desc,colour);
@@ -168,8 +168,49 @@ public class City {
         if (twenty!=null) {
             display.text(x+32,y,twenty.getName(),twenty.getColour());
         }
-        //font.draw(batch,name,getX()*SC+X,480-getY()*SC-Y);
-        display.text(getX()+x+24,getY(),name,colour);
+
+        displayMap(display, mx,0);
+    }
+
+    private void displayMap(Display display, int x, int y) {
+        int cx = getX()+x;
+        int cy = getY()+y;
+        display.text(cx,cy,name,zone.getColour());
+        List<Connection> connections = Connection.getToConnections(this);
+        for(Connection connection: connections) {
+            City city = connection.otherCity(this);
+            if(city.isActive()) {
+                int cost = connection.getCost();
+                int ox = city.getX()+x;
+                int oy = city.getY()+y;
+                int dx = (ox+cx)/2;
+                int dy = (oy+cy)/2;
+                drawDot(display, cx,cy,ox,oy);
+                display.text(dx,dy,""+cost,Color.WHITE);
+            }
+        }
+    }
+
+    private void drawDot(Display display, int x1, int y1, int x2, int y2) {
+        int xd = x2-x1;
+        int yd = y2-y1;
+        int sx = xd<0 ? -1 : xd>0 ? 1 : 0;
+        int sy = yd<0 ? -1 : yd>0 ? 1 : 0;
+        if(Math.abs(xd)>Math.abs(yd)) {
+            float ya = (float)yd/(float)xd;
+            float y = y1;
+            for(int x=x1;x!=x2;x+=sx) {
+                display.text(x,(int)y,".",zone.getColour());
+                y+=(ya*sx);
+            }
+        } else {
+            float xa = (float)xd/(float)yd;
+            float x = x1;
+            for(int y=y1;y!=y2;y+=sy) {
+                display.text((int)x,y,".",zone.getColour());
+                x+=(xa*sy);
+            }
+        }
     }
 
     public int findCheapestRoute(Player player) {
@@ -224,7 +265,7 @@ public class City {
     }
 
     public int getX() {
-        return x/3;
+        return x/2;
     }
 
     public int getY() {

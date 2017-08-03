@@ -111,26 +111,23 @@ public class Plant {
         return resource;
     }
 
-    public void displayPlant(SpriteBatch batch, BitmapFont font, int x, int y) {
+    public void displayPlant(Display display, int x, int y) {
         StringBuilder plantDesc = new StringBuilder(String.format("[%02d] %7s Fuel: %2d Cities: %2d",cost,resource.getPaddedName(),numResource,numCity));
         if (coal>0)  plantDesc.append(" coal: "+coal);
         if (oil>0)  plantDesc.append(" oil: "+oil);
         if (trash>0)  plantDesc.append(" trash: "+trash);
         if (nuclear>0)  plantDesc.append(" nuke: "+nuclear);
-        font.setColor(resource.getColour());
-        font.draw(batch,plantDesc,x,y);
+        display.text(x,y,plantDesc.toString(),resource.getColour());
     }
 
-    public void displayPlantNum(int i, SpriteBatch batch, BitmapFont font, int x, int y) {
-        font.setColor(resource.getColour());
-        font.draw(batch,String.format("%d.",i),x,y);
-        displayPlant(batch,font,x+16,y);
+    public void displayPlantNum(int i, Display display, int x, int y) {
+        display.text(x,y,String.format("%d.",i),resource.getColour());
+        displayPlant(display,x+2,y);
     }
 
-    public void displayPlantBid(SpriteBatch batch, BitmapFont font, int x, int y, int bid) {
+    public void displayPlantBid(Display display, int x, int y, int bid) {
         StringBuilder plantDesc = new StringBuilder(String.format("[%02d] %7s Fuel: %2d Cities: %2d Bid: %2d", cost, resource.getPaddedName(), numResource, numCity, bid));
-        font.setColor(resource.getColour());
-        font.draw(batch,plantDesc,x,y);
+        display.text(x,y,plantDesc.toString(),resource.getColour());
     }
 
     public int getCost() {
