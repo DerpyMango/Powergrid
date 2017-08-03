@@ -87,10 +87,6 @@ public class Powergrid extends ApplicationAdapter {
         turnOrder = players.getTurnOrder();
         reverseTurnOrder = players.getReverseTurnOrder();
 
-        City.wilhelmshaven.setTen(players.getPlayer(0));
-        City.wilhelmshaven.setFifteen(players.getPlayer(1));
-        City.wilhelmshaven.setTwenty(players.getPlayer(2));
-
         //6 active zones for 6 players
         Zone.brown.setActive(true);
         Zone.cyan.setActive(true);

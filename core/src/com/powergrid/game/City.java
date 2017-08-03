@@ -32,7 +32,7 @@ public class City {
     public static City kiel = new City(1).name("Kiel").zone(Zone.cyan).coords(70,19);
     public static City cuxhaven= new City(2).name("Cuxhaven").zone(Zone.cyan).coords(52,30);
     public static City hamburg = new City(3).name("Hamburg").zone(Zone.cyan).coords(70,40);
-    public static City wilhelmshaven = new City(4).name("Wilhelmshaven").zone(Zone.cyan).coords(42,38);
+    public static City wilhelmshaven = new City(4).name("Wilhelms").zone(Zone.cyan).coords(42,38);
     public static City bremen = new City(5).name("Bremen").zone(Zone.cyan).coords(55,50);
     public static City hannover = new City(6).name("Hannover").zone(Zone.cyan).coords(70,69);
 
