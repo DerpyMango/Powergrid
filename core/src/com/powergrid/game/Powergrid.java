@@ -23,6 +23,7 @@ public class Powergrid extends ApplicationAdapter {
     private Stage stage;
     private Window window;
     private BitmapFont font;
+    private Display display;
 
 	private static final int maxPlayers = 6;
 	private int numPlayers = 2;
@@ -71,6 +72,7 @@ public class Powergrid extends ApplicationAdapter {
         stage = new Stage(new ScreenViewport());
         font = new BitmapFont(Gdx.files.internal("skin/courier12.fnt"));
         font.setColor(Color.BLACK);
+        display = new Display(batch,font,Gdx.app.getGraphics().getHeight());
         Gdx.input.setInputProcessor(stage);
 
         deck = new Deck();
@@ -632,7 +634,8 @@ public class Powergrid extends ApplicationAdapter {
     private void displayErrorMessage() {
 	    if(errorTime==0) return;
         font.setColor(Color.PURPLE);
-        font.draw(batch,errorMessage,600,84);
+        //font.draw(batch,errorMessage,600,84);
+        display.text(75,50,errorMessage,Color.PURPLE);
         if (TimeUtils.millis()>errorTime) {
             errorTime = 0;
             errorMessage = "";
@@ -641,8 +644,9 @@ public class Powergrid extends ApplicationAdapter {
 
     private void displayHeader() {
 	    font.setColor(Color.RED);
-	    font.draw(batch,"Step: "+step+" Phase: "+phase+" "+phases[phase], 200, 472);
-	    Resource.displayResources(batch,font,coal,oil,trash,nuclear,0,460);
+	    //font.draw(batch,"Step: "+step+" Phase: "+phase+" "+phases[phase], 200, 472);
+	    display.text(12,1,"Step: "+step+" Phase: "+phase+" "+phases[phase],Color.RED);
+	    Resource.displayResources(display,coal,oil,trash,nuclear,0,2);
     }
 
     private void displayMarket(int step) {
@@ -659,11 +663,11 @@ public class Powergrid extends ApplicationAdapter {
     }
 
     private void displayCities() {
-	    int y=0;
+	    int y=1;
         for(City city : City.germany) {
             if (city.getZone().isActive()) {
-                city.display(batch,font,600,460-y);
-                y+=8;
+                city.display(display,75,y);
+                y+=1;
             }
         }
     }

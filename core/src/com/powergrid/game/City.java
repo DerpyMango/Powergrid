@@ -31,7 +31,7 @@ public class City {
     public static City flensburg = new City(0).name("Flensberg").zone(Zone.cyan).coords(63,7);
     public static City kiel = new City(1).name("Kiel").zone(Zone.cyan).coords(70,19);
     public static City cuxhaven= new City(2).name("Cuxhaven").zone(Zone.cyan).coords(52,30);
-    public static City hamburg = new City(3).name("Hamburg").zone(Zone.cyan).coords(70,38);
+    public static City hamburg = new City(3).name("Hamburg").zone(Zone.cyan).coords(70,40);
     public static City wilhelmshaven = new City(4).name("Wilhelmshaven").zone(Zone.cyan).coords(42,38);
     public static City bremen = new City(5).name("Bremen").zone(Zone.cyan).coords(55,50);
     public static City hannover = new City(6).name("Hannover").zone(Zone.cyan).coords(70,69);
@@ -155,24 +155,21 @@ public class City {
         return totalCost;
     }
 
-    public void display(SpriteBatch batch, BitmapFont font, int x, int y) {
+    public void display(Display display, int x, int y) {
         String desc = String.format("%02d. %s",id,name);
         Color colour = zone.getColour();
-        font.setColor(colour);
-        font.draw(batch,desc,x,y);
+        display.text(x,y,desc,colour);
         if (ten!=null) {
-            font.setColor(ten.getColour());
-            font.draw(batch,ten.getName(),x+120,y);
+            display.text(x+16,y,ten.getName(),ten.getColour());
         }
         if (fifteen!=null) {
-            font.setColor(fifteen.getColour());
-            font.draw(batch,fifteen.getName(),x+160,y);
+            display.text(x+24,y,fifteen.getName(),fifteen.getColour());
         }
         if (twenty!=null) {
-            font.setColor(twenty.getColour());
-            font.draw(batch,twenty.getName(),x+200,y);
+            display.text(x+32,y,twenty.getName(),twenty.getColour());
         }
         //font.draw(batch,name,getX()*SC+X,480-getY()*SC-Y);
+        display.text(getX()+x+24,getY(),name,colour);
     }
 
     public int findCheapestRoute(Player player) {
@@ -227,10 +224,10 @@ public class City {
     }
 
     public int getX() {
-        return x;
+        return x/3;
     }
 
     public int getY() {
-        return y;
+        return y/3;
     }
 }

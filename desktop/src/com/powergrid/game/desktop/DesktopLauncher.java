@@ -11,7 +11,7 @@ public class DesktopLauncher {
 //		config.backgroundFPS = 0; // Setting to 0 disables background fps throttling
 //		config.vSyncEnabled = false; // Setting to false disables vertical sync
 		config.useGL30 = true;
-		config.width = 1024;
+		config.width = 1200;
 		config.height = 480;
 		config.fullscreen = false;
 		new LwjglApplication(new Powergrid(), config);

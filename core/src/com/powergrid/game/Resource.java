@@ -39,18 +39,17 @@ public class Resource {
     public static final int trashReplenish[][] = {{},{},{1,2,3},{1,2,3},{2,3,4},{3,3,5},{3,5,6}};
     public static final int nuclearReplenish[][] = {{},{},{1,1,1},{1,1,1},{1,2,2},{2,3,2},{2,3,3}};
 
-    public static void displayResources(SpriteBatch batch, BitmapFont font, int c, int o, int t, int n, int x, int y) {
-        displayResourceTrack(batch,font,"Coal",c,coalPrice,coal.getColour(), x, y);
-        displayResourceTrack(batch,font,"Oil",o,oilPrice,oil.getColour(),x,y-8);
-        displayResourceTrack(batch,font,"Trash",t,trashPrice,trash.getColour(),x,y-16);
-        displayResourceTrack(batch,font,"Nuke",n,nuclearPrice,nuclear.getColour(),x,y-24);
+    public static void displayResources(Display display, int c, int o, int t, int n, int x, int y) {
+        displayResourceTrack(display,"Coal",c,coalPrice,coal.getColour(), x, y);
+        displayResourceTrack(display,"Oil",o,oilPrice,oil.getColour(),x,y+1);
+        displayResourceTrack(display,"Trash",t,trashPrice,trash.getColour(),x,y+2);
+        displayResourceTrack(display,"Nuke",n,nuclearPrice,nuclear.getColour(),x,y+3);
     }
 
-    public static void displayResourceTrack(SpriteBatch batch, BitmapFont font, String name, int amount, int price[], Color colour, int x, int y) {
-        font.setColor(colour);
-        font.draw(batch,name+": ",x,y);
+    public static void displayResourceTrack(Display display, String name, int amount, int price[], Color colour, int x, int y) {
+        display.text(x,y,name+": ",colour);
         for(int i=0;i<amount;i++) {
-            font.draw(batch,""+price[i],x-i*16+32+amount*16,y);
+            display.text(x+2*(amount-i)+4,y,""+price[i],colour);
         }
     }
 
