@@ -83,9 +83,9 @@ public class Powergrid extends ApplicationAdapter {
         reverseTurnOrder = players.getReverseTurnOrder();
 
         //6 active zones for 6 players
-        Zone.brown.setActive(false);
-        Zone.cyan.setActive(false);
-        Zone.red.setActive(false);
+        Zone.brown.setActive(true);
+        Zone.cyan.setActive(true);
+        Zone.red.setActive(true);
         Zone.blue.setActive(true);
         Zone.magenta.setActive(true);
         Zone.yellow.setActive(true);
