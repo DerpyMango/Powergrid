@@ -27,7 +27,7 @@ public class Market {
         deck.moveTopTo(future);
     }
 
-    private void initStep3Market(Deck deck, int phase) {
+    public void initStep3Market(Deck deck, int phase) {
         future.moveTopTo(market);
         future.moveTopTo(market);
         future.moveTopTo(market);
@@ -58,7 +58,6 @@ public class Market {
         if(deck.getTop()==Plant.step3) {
             deck.remove(Plant.step3);
             step3 = true;
-            initStep3Market(deck,phase);
         }
         if (step<3 && !step3) {
             deck.moveTopTo(future, maxCity);

@@ -51,6 +51,7 @@ public class Powergrid extends ApplicationAdapter {
 	private int trash = 9;
 	private int nuclear = 2;
 	private boolean won = false;
+	private boolean step3 = false;
 
 	private Market market;
     private Deck deck;
@@ -509,9 +510,9 @@ public class Powergrid extends ApplicationAdapter {
 
     private void updateMarket() {
 	    int maxCity = players.getMostCities();
-	    if (market.updateMarket(deck,step,phase,maxCity)) {
+	    step3 = market.updateMarket(deck,step,phase,maxCity);
+	    if (step3) {
 	        //Do step 3 stuff
-            step=3;
             removeLowestPlant();
         }
     }
@@ -560,6 +561,10 @@ public class Powergrid extends ApplicationAdapter {
 	    if(won) {
 	        displayMessage(new StringBuilder(currentPlayer.getName()).append(" Has Won!"),currentPlayer.getColour());
 	        return;
+        }
+        if(step3 && phase>2) {
+            market.initStep3Market(deck,phase);
+            step3 = false;
         }
 		switch (phase) {
             case 1:
