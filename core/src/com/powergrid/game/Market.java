@@ -27,11 +27,26 @@ public class Market {
         deck.moveTopTo(future);
     }
 
+    private void initStep3Market(Deck deck, int phase) {
+        future.moveTopTo(market);
+        future.moveTopTo(market);
+        future.moveTopTo(market);
+        future.moveTopTo(market);
+        Plant lowest = market.getLowest();
+        market.remove(lowest);
+        deck.shuffle();
+    }
+
     public void displayMarket(int step, Display display, int x, int y) {
-        display.text(x,y,"Future",Color.GREEN);
-        future.displayCards(display,x,y+1);
-        display.text(x,y+5,"Actual",Color.GREEN);
-        market.displayCardsNum(display,x,y+6);
+        if (step<3) {
+            display.text(x, y, "Future", Color.GREEN);
+            future.displayCards(display, x, y + 1);
+            display.text(x, y + 5, "Actual", Color.GREEN);
+            market.displayCardsNum(display, x, y + 6);
+        } else {
+            display.text(x, y, "Actual", Color.GREEN);
+            market.displayCardsNum(display, x, y + 1);
+        }
     }
 
     public Cards getMarket() {
@@ -42,11 +57,16 @@ public class Market {
         boolean step3 = false;
         if(deck.getTop()==Plant.step3) {
             deck.remove(Plant.step3);
-            step3 =true;
+            step3 = true;
+            initStep3Market(deck,phase);
         }
-        deck.moveTopTo(future);
-        Plant lowest = future.getLowest();
-        Cards.move(lowest,future,market);
+        if (step<3 && !step3) {
+            deck.moveTopTo(future);
+            Plant lowest = future.getLowest();
+            Cards.move(lowest, future, market);
+        } else {
+            deck.moveTopTo(market);
+        }
         return step3;
     }
 

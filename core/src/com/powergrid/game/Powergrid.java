@@ -26,7 +26,7 @@ public class Powergrid extends ApplicationAdapter {
     private Display display;
 
 	private static final int maxPlayers = 6;
-	private int numPlayers = 6;
+	private int numPlayers = 2;
 	private Players players = new Players();
 	private Color colours[] = {Color.RED,Color.YELLOW,Color.BLUE,Color.GREEN,Color.MAGENTA,Color.WHITE};
 	private String playerNames[] = {"Dave","Alex","Josh","Fred","Jake","Alice"};
@@ -50,6 +50,7 @@ public class Powergrid extends ApplicationAdapter {
 	private int oil = 18;
 	private int trash = 9;
 	private int nuclear = 2;
+	private boolean won = false;
 
 	private Market market;
     private Deck deck;
@@ -159,6 +160,7 @@ public class Powergrid extends ApplicationAdapter {
     }
 
     private void doInput() {
+	    if(won) return;
 	    if (phase==1) {
 	        numPassed = 0;
         } else if(phase==2) {
@@ -181,16 +183,16 @@ public class Powergrid extends ApplicationAdapter {
     }
 
     private void resupplyResources() {
-        coal+=Resource.coalReplenish[numPlayers][step];
+        coal+=Resource.coalReplenish[numPlayers][step-1];
         if(coal>Resource.maxCoal) coal = Resource.maxCoal;
 
-        oil+=Resource.oilReplenish[numPlayers][step];
+        oil+=Resource.oilReplenish[numPlayers][step-1];
         if(oil>Resource.maxOil) oil = Resource.maxOil;
 
-        trash+=Resource.trashReplenish[numPlayers][step];
+        trash+=Resource.trashReplenish[numPlayers][step-1];
         if(trash>Resource.maxTrash) trash = Resource.maxTrash;
 
-        nuclear+=Resource.nuclearReplenish[numPlayers][step];
+        nuclear+=Resource.nuclearReplenish[numPlayers][step-1];
         if(nuclear>Resource.maxNuclear) nuclear = Resource.maxNuclear;
     }
 
@@ -209,14 +211,12 @@ public class Powergrid extends ApplicationAdapter {
             number = number.substring(0, number.length() - 1);
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) && number.length()>0) {
             int numCity = Integer.parseInt(number);
-            if (numCity > currentPlayer.getNumCity()) {
-                setErrorMessage(String.format("You only have %d cities", currentPlayer.getNumCity()));
-                number = "";
-            } else {
-                number = "";
-                payCurrentPlayer(numCity);
-                setNextReversePlayer();
-            }
+            if (numCity > currentPlayer.getNumCity())
+                numCity = currentPlayer.getNumCity();
+            number = "";
+            payCurrentPlayer(numCity);
+            if(won) return;
+            setNextReversePlayer();
         }
     }
 
@@ -229,7 +229,11 @@ public class Powergrid extends ApplicationAdapter {
             if(citiesSupplied>=numCities)
                 break;
         }
-        currentPlayer.spend(-payment[Math.min(citiesSupplied,numCities)]);
+        int actualCitiesPowered = Math.min(citiesSupplied,numCities);
+        currentPlayer.spend(-payment[actualCitiesPowered]);
+	    if(actualCitiesPowered>=winCity[numPlayers]) {
+	        won = true;
+        }
     }
 
     private boolean enoughResources(Plant plant) {
@@ -550,6 +554,10 @@ public class Powergrid extends ApplicationAdapter {
     }
 
     private void doEachPhase() {
+	    if(won) {
+	        displayMessage(new StringBuilder(currentPlayer.getName()).append(" Has Won!"),currentPlayer.getColour());
+	        return;
+        }
 		switch (phase) {
             case 1:
                 phase1();
@@ -625,7 +633,7 @@ public class Powergrid extends ApplicationAdapter {
     }
 
     private void displayMessage(StringBuilder message, Color colour) {
-	    currentPlayer.display(display, col2,47);
+	    currentPlayer.display(display, col2,51);
 	    display.text(col2,48,message.toString(),colour);
     }
 

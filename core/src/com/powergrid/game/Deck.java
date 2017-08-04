@@ -1,5 +1,8 @@
 package com.powergrid.game;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -35,6 +38,10 @@ public class Deck extends Cards {
             } while (isIn(Plant.getPlant(plant)));
             add(Plant.getPlant(plant));
         }
+    }
+
+    public void shuffle() {
+        Collections.shuffle(cards);
     }
 
     public Plant getTop() {
