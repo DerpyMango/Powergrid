@@ -53,7 +53,7 @@ public class Market {
         return market;
     }
 
-    public boolean updateMarket(Deck deck, int step, int phase) {
+    public boolean updateMarket(Deck deck, int step, int phase, int maxCity) {
         boolean step3 = false;
         if(deck.getTop()==Plant.step3) {
             deck.remove(Plant.step3);
@@ -61,20 +61,20 @@ public class Market {
             initStep3Market(deck,phase);
         }
         if (step<3 && !step3) {
-            deck.moveTopTo(future);
+            deck.moveTopTo(future, maxCity);
             Plant lowest = future.getLowest();
             Cards.move(lowest, future, market);
         } else {
-            deck.moveTopTo(market);
+            deck.moveTopTo(market, maxCity);
         }
         return step3;
     }
 
-    public void updatePlantMarket(Deck deck, int step) {
+    public void updatePlantMarket(Deck deck, int step, int maxCity) {
         if(step<3) {
             Plant highest = future.getHighest();
             Cards.moveBottom(highest, future, deck);
-            deck.moveTopTo(future);
+            deck.moveTopTo(future,maxCity);
         } else {
             Plant lowest = market.getLowest();
             market.remove(lowest);
@@ -95,14 +95,14 @@ public class Market {
             }
             if(plantToRemove!=null) {
                 market.remove(plantToRemove);
-                updatePlantMarket(deck, step);
+                updatePlantMarket(deck, step, lowest);
                 plantToRemove = null;
             }
         } while (repeat);
         return hasRemoved;
     }
 
-    public void removeLowestPlant(Deck deck, int step) {
+    public void removeLowestPlant(Deck deck, int step, int maxCity) {
         int lowest = 99;
         Plant plantToRemove = null;
         for(Plant plant : market.getCards()) {
@@ -112,6 +112,6 @@ public class Market {
             }
         }
         market.remove(plantToRemove);
-        updatePlantMarket(deck, step);
+        updatePlantMarket(deck, step, maxCity);
     }
 }

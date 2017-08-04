@@ -60,6 +60,19 @@ public class Cards {
         other.add(top);
     }
 
+
+    public void moveTopTo(Cards other, int maxCity) {
+        Plant top;
+        do {
+            top = cards.get(0);
+            if (top.getCost() < maxCity) {
+                cards.remove(top);
+            }
+        } while (top.getCost() < maxCity);
+        cards.remove(top);
+        other.add(top);
+    }
+
     public List<Plant> getCards() {
         return cards;
     }

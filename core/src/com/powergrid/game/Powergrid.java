@@ -197,7 +197,8 @@ public class Powergrid extends ApplicationAdapter {
     }
 
     private void updatePlantMarket() {
-        market.updatePlantMarket(deck,step);
+	    int maxCity = players.getMostCities();
+        market.updatePlantMarket(deck,step,maxCity);
     }
 
 
@@ -337,7 +338,8 @@ public class Powergrid extends ApplicationAdapter {
     }
 
     private void removeLowestPlant() {
-        market.removeLowestPlant(deck,step);
+	    int maxCity = players.getMostCities();
+        market.removeLowestPlant(deck,step,maxCity);
         updateMarket();
     }
 
@@ -506,7 +508,8 @@ public class Powergrid extends ApplicationAdapter {
     }
 
     private void updateMarket() {
-	    if (market.updateMarket(deck,step,phase)) {
+	    int maxCity = players.getMostCities();
+	    if (market.updateMarket(deck,step,phase,maxCity)) {
 	        //Do step 3 stuff
             step=3;
             removeLowestPlant();
