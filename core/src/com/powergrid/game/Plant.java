@@ -1,10 +1,5 @@
 package com.powergrid.game;
 
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-
-import java.util.List;
-
 /**
  * Created by David on 8/07/2017.
  */

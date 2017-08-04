@@ -1,8 +1,6 @@
 package com.powergrid.game;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 /**
  * Created by David on 9/07/2017.

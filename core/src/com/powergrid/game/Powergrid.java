@@ -26,7 +26,7 @@ public class Powergrid extends ApplicationAdapter {
     private Display display;
 
 	private static final int maxPlayers = 6;
-	private int numPlayers = 2;
+	private int numPlayers = 3;
 	private Players players = new Players();
 	private Color colours[] = {Color.RED,Color.YELLOW,Color.BLUE,Color.GREEN,Color.MAGENTA,Color.WHITE};
 	private String playerNames[] = {"Dave","Alex","Josh","Fred","Jake","Alice"};
@@ -90,9 +90,9 @@ public class Powergrid extends ApplicationAdapter {
         reverseTurnOrder = players.getReverseTurnOrder();
 
         //6 active zones for 6 players
-        Zone.brown.setActive(true);
-        Zone.cyan.setActive(true);
-        Zone.red.setActive(true);
+        Zone.brown.setActive(false);
+        Zone.cyan.setActive(false);
+        Zone.red.setActive(false);
         Zone.blue.setActive(true);
         Zone.magenta.setActive(true);
         Zone.yellow.setActive(true);
@@ -428,7 +428,7 @@ public class Powergrid extends ApplicationAdapter {
             discardPlant(2);
         else if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_3))
             discardPlant(3);
-        else if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_4))
+        else if(maxPlants[numPlayers]>=4 && Gdx.input.isKeyJustPressed(Input.Keys.NUM_4))
             discardPlant(4);
         else if(step > 0 && Gdx.input.isKeyJustPressed(Input.Keys.P)) {
             numPassed++;
