@@ -30,7 +30,7 @@ public class Powergrid extends ApplicationAdapter {
 	private Players players = new Players();
 	private Color colours[] = {Color.RED,Color.YELLOW,Color.BLUE,Color.GREEN,Color.MAGENTA,Color.WHITE};
 	private String playerNames[] = {"Dave","Alex","Josh","Fred","Jake","Alice"};
-	private String phases[] = {"Init","Play Order","Auction","Resources","Cities","Payment","Bureaucracy"};
+	private String phases[] = {"Init","Play Order","Auction","Resources","Cities","Payment","Bureaucracy","Discard"};
 
     public static final int areas[] = {0,0,3,3,4,5,5};
     public static final int maxPlants[] = {0,0,4,3,3,3,3};
@@ -165,10 +165,12 @@ public class Powergrid extends ApplicationAdapter {
 	    if (phase==1) {
 	        numPassed = 0;
         } else if(phase==2) {
-	        if(currentPlayer.getPlants().getCards().size() >= maxPlants[numPlayers]) {
-	            getPlantToDiscard();
+            getPlantToChoose();
+        } else if (phase==7) {
+            if(currentPlayer.getPlants().getCards().size() >= maxPlants[numPlayers]) {
+                getPlantToDiscard();
             } else {
-                getPlantToChoose();
+                setNextPlayerPhase7();
             }
         } else if(phase==3) {
 	        buyResources();
@@ -422,23 +424,25 @@ public class Powergrid extends ApplicationAdapter {
     }
 
     private void getPlantToDiscard() {
-        if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_1))
+	    int numPlants = currentPlayer.getPlants().getCards().size();
+        if(numPlants>=1 && Gdx.input.isKeyJustPressed(Input.Keys.NUM_1))
             discardPlant(1);
-        else if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_2))
+        else if(numPlants>=2 && Gdx.input.isKeyJustPressed(Input.Keys.NUM_2))
             discardPlant(2);
-        else if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_3))
+        else if(numPlants>=3 && Gdx.input.isKeyJustPressed(Input.Keys.NUM_3))
             discardPlant(3);
-        else if(maxPlants[numPlayers]>=4 && Gdx.input.isKeyJustPressed(Input.Keys.NUM_4))
+        else if(numPlants>=4 && maxPlants[numPlayers]>=4 && Gdx.input.isKeyJustPressed(Input.Keys.NUM_4))
             discardPlant(4);
         else if(step > 0 && Gdx.input.isKeyJustPressed(Input.Keys.P)) {
             numPassed++;
-            passBid(currentPlayer);
+            passDiscard(currentPlayer);
         }
     }
 
     private void discardPlant(int p) {
 	    Plant plant = currentPlayer.getPlants().getCards().get(p-1);
         currentPlayer.getPlants().remove(plant);
+        setNextPlayerPhase7();
     }
 
     private void getPlantToChoose() {
@@ -519,8 +523,15 @@ public class Powergrid extends ApplicationAdapter {
 
     private void passBid(Player player) {
         player.setPassed(true);
-	    currentPlant = null;
-	    setNextPlayer();
+        currentPlant = null;
+        setNextPlayer();
+    }
+
+
+    private void passDiscard(Player player) {
+        player.setPassed(true);
+        currentPlant = null;
+        setNextPlayerPhase7();
     }
 
     private void setNextPlayer() {
@@ -542,19 +553,29 @@ public class Powergrid extends ApplicationAdapter {
         phase+=1;
         for (Player player : turnOrder)
             player.setPassed(false);
-        if(numPassed>=numPlayers)
+        if (numPassed >= numPlayers)
             removeLowestPlant();
         initReverseTurnOrderPlayer();
     }
 
     private void setNextReversePlayer() {
-	    currentPlayerNum+=1;
-	    if(currentPlayerNum>=numPlayers) {
-	        phase+=1;
+        currentPlayerNum+=1;
+        if(currentPlayerNum>=numPlayers) {
+            phase+=1;
             initReverseTurnOrderPlayer();
             return;
         }
         currentPlayer = reverseTurnOrder.get(currentPlayerNum);
+    }
+
+    private void setNextPlayerPhase7() {
+        currentPlayerNum+=1;
+        if(currentPlayerNum>=numPlayers) {
+            phase=2;
+            initTurnOrderPlayer();
+            return;
+        }
+        currentPlayer = turnOrder.get(currentPlayerNum);
     }
 
     private void doEachPhase() {
@@ -569,6 +590,9 @@ public class Powergrid extends ApplicationAdapter {
 		switch (phase) {
             case 1:
                 phase1();
+                break;
+            case 7:
+                phase7();
                 break;
             case 2:
                 phase2();
@@ -594,6 +618,10 @@ public class Powergrid extends ApplicationAdapter {
     private void initTurnOrderPlayer() {
         currentPlayer = turnOrder.get(0);
         currentPlayerNum = 0;
+        while(currentPlayer.hasPassed()) {
+            currentPlayerNum++;
+            currentPlayer = turnOrder.get(currentPlayerNum);
+        }
     }
 
 
@@ -605,11 +633,15 @@ public class Powergrid extends ApplicationAdapter {
     private void phase1() {
         determineTurnOrder();
         initTurnOrderPlayer();
-        phase=2;
+        phase=7;
     }
 
     private void phase2() {
 	    bidForPlant();
+    }
+
+    private void phase7() {
+	    disposePlant();
     }
 
     private void phase3() {
@@ -628,13 +660,18 @@ public class Powergrid extends ApplicationAdapter {
         displayMessage(message,currentPlayer.getColour());
     }
 
+    private void disposePlant() {
+	    if(currentPlayer.getPlants().getCards().size()>=maxPlants[numPlayers]) {
+            StringBuilder message = new StringBuilder(currentPlayer.getName());
+            message.append(" choose plant to **discard**");
+            message.append(" or press P to pass");
+            displayMessage(message, currentPlayer.getColour());
+        }
+    }
+
     private void bidForPlant() {
         StringBuilder message = new StringBuilder(currentPlayer.getName());
-	    if(currentPlayer.getPlants().getCards().size() < maxPlants[numPlayers]) {
-            message.append(" choose plant to bid on");
-        } else {
-	        message.append(" choose plant to discard");
-        }
+        message.append(" choose plant to bid on");
         if(step>0)
             message.append(" or press P to pass");
         displayMessage(message,currentPlayer.getColour());
